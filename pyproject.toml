@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scarr"
+version = "0.0.1"
+authors = [
+  { name="Jonah Bosland", email="boslandj@oregonstate.edu" },
+  { name="Stefan Ene", email="enes@oregonstate.edu" },
+  { name="Vincent Immler", email="vincent.immler@oregonstate.edu" },
+]
+description = "A high-performance SCA library for datasets that include NxM EM trace grids."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MPL-2.0"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/decryptofy/scarr"
+"Bug Tracker" = "https://github.com/decryptofy/scarr/issues"
+
+[tool.autopep8]
+ignore = "E501,W6"  # or ["E501", "W6"]
+in-place = true
+recursive = true
+aggressive = 3
+
+[tool.ruff.lint]
+select = ["E4", "E9", "F"]
+ignore = ["E7"]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
