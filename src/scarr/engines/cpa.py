@@ -46,13 +46,13 @@ class CPA(Engine):
 
             for tile_x, tile_y, results, candidates in starmap_results:
                 if self.final_results is None:
-                    self.final_results = np.zeros((len(container.tiles), 
-                                                   len(container.bytes), 
-                                                   results.shape[1], 
-                                                   256, 
+                    self.final_results = np.zeros((len(container.tiles),
+                                                   len(container.bytes),
+                                                   results.shape[1],
+                                                   256,
                                                    container.sample_length), dtype=np.float64)
-                    self.final_candidates = np.zeros((len(container.tiles), 
-                                                      len(container.bytes), 
+                    self.final_candidates = np.zeros((len(container.tiles),
+                                                      len(container.bytes),
                                                       results.shape[1]), dtype=np.uint8)
 
                 tile_index = container.tiles.index((tile_x, tile_y))
@@ -160,7 +160,7 @@ class CPA(Engine):
         to_sqrt[to_sqrt < 0] = 0
         denom_model = np.sqrt(to_sqrt)
 
-        denominator = denom_model[:,:,None]*denom_sample
+        denominator = denom_model[:, :, None]*denom_sample
 
         denominator[denominator == 0] = 1
 
@@ -168,7 +168,7 @@ class CPA(Engine):
 
     def get_candidate(self):
         return self.final_candidates
-    
+
     def populate(self, sample_length, num_bytes):
         # Sum of the model so far
         self.model_sum = np.zeros((256, num_bytes), dtype=np.float32)
@@ -181,7 +181,6 @@ class CPA(Engine):
         # Sum of the product of the samples and the models
         self.prod_sum = np.zeros((256 * num_bytes, sample_length), dtype=np.float32)
 
-    
     def update(self, traces: np.ndarray, data: np.ndarray):
         # Update the number of rows processed
         self.trace_count += traces.shape[0]
