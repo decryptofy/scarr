@@ -39,7 +39,7 @@ class NICV(Engine):
         noises = np.sum(self.sum_sq, axis=0) / np.sum(self.trace_counts) - (mean)**2
 
         return signals / noises
-    
+
     @staticmethod
     @nb.njit(parallel=True, fastmath=True)
     def internal_state_update(traces: np.ndarray, plaintext: np.ndarray, counts, sums, sums_sq):
