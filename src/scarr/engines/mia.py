@@ -106,13 +106,13 @@ class MIA(Engine):
         trace_counts = trace_hist.sum(axis=1)
         trace_counts[trace_counts == 0] = 1
 
-        trace_pdf = (trace_hist.swapaxes(0,1) / trace_counts).swapaxes(0, 1)
+        trace_pdf = (trace_hist.swapaxes(0, 1) / trace_counts).swapaxes(0, 1)
         trace_pdf[trace_pdf == 0] = 1
 
         trace_model_counts = self.histogram.sum(axis=2)
         trace_model_counts[trace_model_counts == 0] = 1
 
-        trace_model_pdf = (self.histogram.swapaxes(0,1).swapaxes(1,2) / trace_model_counts[:,0]).swapaxes(1,2).swapaxes(0,1)
+        trace_model_pdf = (self.histogram.swapaxes(0, 1).swapaxes(1, 2) / trace_model_counts[:, 0]).swapaxes(1, 2).swapaxes(0, 1)
         trace_model_pdf[trace_model_pdf == 0] = 1
 
         model_probabilities = trace_model_counts / trace_counts
@@ -136,7 +136,7 @@ class MIA(Engine):
         converge_index = 0
         for batch in container.get_batches(tile_x, tile_y, byte):
             if traces_processed >= self.convergence_step:
-                result = self.calculate().swapaxes(0,1)
+                result = self.calculate().swapaxes(0, 1)
                 self.results[converge_index, :, :] = result
                 self.candidates[converge_index] = self.find_candidate(result)
                 traces_processed = 0
@@ -167,7 +167,7 @@ class MIA(Engine):
 
         while len(batch) > 0:
             if traces_processed >= self.convergence_step:
-                result = self.calculate().swapaxes(0,1)
+                result = self.calculate().swapaxes(0, 1)
                 self.results[converge_index, :, :] = result
                 self.candidates[converge_index] = self.find_candidate(result)
                 traces_processed = 0
@@ -179,7 +179,7 @@ class MIA(Engine):
             index += 1
             await task
 
-        result = self.calculate().swapaxes(0,1)
+        result = self.calculate().swapaxes(0, 1)
         self.results[converge_index, :, :] = result
         self.candidates[converge_index] = self.find_candidate(result)
 
