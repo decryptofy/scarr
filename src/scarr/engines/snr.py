@@ -72,7 +72,6 @@ class SNR(Engine):
 
 class SNR_Evaluator(SNR):
 
-
     @staticmethod
     def _run(self, container, tile_x, tile_y, byte):
         for batch in container.get_batches_by_byte(tile_x, tile_y, byte):

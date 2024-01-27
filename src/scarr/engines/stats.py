@@ -10,6 +10,7 @@ from .engine import Engine
 from multiprocessing.pool import Pool
 import asyncio
 
+
 class Stats(Engine):
     def __init__(self):
         self.means = None
@@ -38,7 +39,7 @@ class Stats(Engine):
 
             self.means = tile_means
             self.variances = tile_variances
-    
+
     @staticmethod
     def _run(self, container, tile_x, tile_y):
         self.count = np.uint32(0)
@@ -53,7 +54,7 @@ class Stats(Engine):
                 self.update(batch[-1])
 
         return tile_x, tile_y, self.mean, self.variance / self.count
-    
+
     async def stat_batch_loop(self, container):
         index = 0
         batch = container.get_batch_index(index)
@@ -67,7 +68,7 @@ class Stats(Engine):
 
     def update(self, traces: np.ndarray):
         self.count += traces.shape[0]
-        
+
         delta1 = traces - self.mean
 
         self.mean += np.sum(delta1 / self.count, axis=0)
@@ -78,7 +79,7 @@ class Stats(Engine):
 
     async def async_update(self, traces: np.ndarray):
         self.count += traces.shape[0]
-        
+
         delta1 = traces - self.mean
 
         self.mean += np.sum(delta1 / self.count, axis=0)
@@ -89,9 +90,9 @@ class Stats(Engine):
 
     def get_means(self):
         return self.means
-    
+
     def get_variances(self):
         return self.variances
-    
+
     def get_tiles(self):
         return self.tiles
