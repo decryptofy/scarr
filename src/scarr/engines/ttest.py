@@ -26,7 +26,7 @@ class Ttest(Engine):
         self.samples_len = 0
         self.batch_size = 0
         # Results
-        self.results = None
+        self.final_results = None
 
 
     def populate(self, trace):
@@ -39,11 +39,6 @@ class Ttest(Engine):
                 self.sums_sq2 = np.zeros((self.samples_len), dtype=np.float32)
         except:
             print("T-test: Error populating")
-
-    def _get_result(self, trace):
-        if self.results is None:
-            self.calculate(trace)
-        return self.results #, self.deg_freedom
     
     
     def accumulate_batch(self, batches, sum, sum_sq):
@@ -82,7 +77,7 @@ class Ttest(Engine):
             results[0] = np.divide(self.sums2, self.traces_len)
             results[1] = np.subtract(np.divide(self.sums_sq2, self.traces_len), (results[0]**2))
         
-        self.results = results
+        return results
     
 
     def run(self, container):
@@ -100,7 +95,7 @@ class Ttest(Engine):
             (tile_x, tile_y) = tile
             for trace in trace_counts:
                 workload.append((self, container, tile_x, tile_y, trace))
-        starmap_results = pool.starmap(self._run, workload)
+        starmap_results = pool.starmap(self.run_workload, workload)
         pool.close()
         pool.join()
 
@@ -116,7 +111,7 @@ class Ttest(Engine):
     
 
     @staticmethod
-    def _run(self, container, tile_x, tile_y, trace):
+    def run_workload(self, container, tile_x, tile_y, trace):
         self.populate(trace)
         if container.fetch_async:
             if trace == 0:
@@ -136,7 +131,7 @@ class Ttest(Engine):
                 batches = container.get_batches2(tile_x, tile_y)
                 self.accumulate_batch(batches, self.sums2, self.sums_sq2)
         # Done
-        return tile_x, tile_y, self._get_result(trace), trace
+        return tile_x, tile_y, self.calculate(trace), trace
     
 
     async def batch_loop(self, container, trace_number):

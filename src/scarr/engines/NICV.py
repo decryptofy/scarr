@@ -38,12 +38,7 @@ class NICV(Engine):
         noises = np.sum(self.sum_sq, axis=0) / np.sum(self.trace_counts) - (mean)**2
 
         
-        self.results = signals / noises
-        
-    def _get_result(self):
-        if self.results is None:
-            self.calculate()
-        return self.results
+        return signals / noises
     
     @staticmethod
     @nb.njit(parallel=True, fastmath=True)  

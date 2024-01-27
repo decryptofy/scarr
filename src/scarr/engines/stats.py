@@ -44,12 +44,13 @@ class Stats(Engine):
         self.count = np.uint32(0)
         self.mean = np.zeros((container.sample_length), dtype=np.float64)
         self.variance = np.zeros((container.sample_length), dtype=np.float64)
+
         container.configure(tile_x, tile_y, [0])
         if container.fetch_async:
             asyncio.run(self.stat_batch_loop(container))
         else:
             for batch in container.get_batches(tile_x, tile_y, 0):
-                self.welfords(batch[-1])
+                self.update(batch[-1])
 
         return tile_x, tile_y, self.mean, self.variance / self.count
     
@@ -59,12 +60,12 @@ class Stats(Engine):
         index += 1
 
         while len(batch) > 0:
-            task = asyncio.create_task(self.async_welfords(batch[-1]))
+            task = asyncio.create_task(self.async_update(batch[-1]))
             batch = container.get_batch_index(index)
             index += 1
             await task
 
-    def welfords(self, traces: np.ndarray):
+    def update(self, traces: np.ndarray):
         self.count += traces.shape[0]
         
         delta1 = traces - self.mean
@@ -75,7 +76,7 @@ class Stats(Engine):
 
         self.variance += np.sum(delta1 * delta2, axis=0)
 
-    async def async_welfords(self, traces: np.ndarray):
+    async def async_update(self, traces: np.ndarray):
         self.count += traces.shape[0]
         
         delta1 = traces - self.mean

@@ -38,12 +38,7 @@ class SNR(Engine):
         noises = np.mean(variances, axis=0)
         noises[noises == 0] = 1
         
-        self.results = signals / noises
-        
-    def _get_result(self):
-        if self.results is None:
-            self.calculate()
-        return self.results
+        return signals / noises
     
     @staticmethod
     @nb.njit(parallel=True, cache=True, nogil=True)  

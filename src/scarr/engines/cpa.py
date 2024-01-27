@@ -39,7 +39,7 @@ class CPA(Engine):
                 (tile_x, tile_y) = tile
                 workload.append((self, container, tile_x, tile_y))
 
-            starmap_results = pool.starmap(self._run, workload)
+            starmap_results = pool.starmap(self.run_workload, workload)
             pool.close()
             pool.join()
             
@@ -53,7 +53,7 @@ class CPA(Engine):
                 self.final_candidates[tile_index] = candidates
 
     @staticmethod
-    def _run(self, container, tile_x, tile_y):
+    def run_workload(self, container, tile_x, tile_y):
         num_steps = container.configure(tile_x, tile_y, container.bytes, self.convergence_step)
         if self.convergence_step is None:
             self.convergence_step = np.inf
@@ -72,16 +72,20 @@ class CPA(Engine):
                 if traces_processed >= self.convergence_step:
                     result = self.calculate()
                     self.results[:,converge_index,:,:] = result
-                    self.candidates[:,converge_index] = self._get_candidate(result)
+                    self.candidates[:,converge_index] = self.find_candidate(result)
                     traces_processed = 0
                     converge_index += 1
 
-                self.update(batch[-1], batch[0])
-                traces_processed += batch[-1].shape[0]
+                # Generate modeled power values for plaintext values
+                model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[0])
+                traces = batch[-1].astype(np.float32)
+
+                self.update(traces, model)
+                traces_processed += traces.shape[0]
 
             result = self.calculate()
             self.results[:,converge_index,:,:] = result
-            self.candidates[:,converge_index] = self._get_candidate(result)
+            self.candidates[:,converge_index] = self.find_candidate(result)
 
         return tile_x, tile_y, self.results, self.candidates
     
@@ -97,32 +101,40 @@ class CPA(Engine):
             if traces_processed >= self.convergence_step:
                     result = self.calculate()
                     self.results[:,converge_index,:,:] = result
-                    self.candidates[:,converge_index] = self._get_candidate(result)
+                    self.candidates[:,converge_index] = self.find_candidate(result)
                     traces_processed = 0
                     converge_index += 1
 
-            task = asyncio.create_task(self.async_update(batch[-1], batch[0]))
-            traces_processed += batch[-1].shape[0]
+            # Generate modeled power values for plaintext values
+            model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[0])
+            traces = batch[-1].astype(np.float32)
+
+            task = asyncio.create_task(self.async_update(traces, model))
+            traces_processed += traces.shape[0]
+
             batch = container.get_batch_index(index)
             index += 1
             await task
 
         result = self.calculate()
         self.results[:,converge_index,:,:] = result
-        self.candidates[:,converge_index] = self._get_candidate(result)
-    
-    def update(self, traces: np.ndarray, plaintext: np.ndarray):
-        # Generate modeled power values for plaintext values
-        model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=plaintext)
-        # Update accumulators
-        self.internal_state_update(traces.astype(np.float32), model)
+        self.candidates[:,converge_index] = self.find_candidate(result)
 
-    async def async_update(self, traces: np.ndarray, plaintext: np.ndarray):
-        # Generate modeled power values for plaintext values
-        model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=plaintext)
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
+        # Update the number of rows processed
+        self.trace_count += traces.shape[0]
+        # Update sample accumulator
+        self.sample_sum += np.sum(traces, axis=0)
+        # Update sample squared accumulator
+        self.sample_sq_sum += np.sum(np.square(traces), axis=0)
+        # Update model accumulator
+        self.model_sum += np.sum(data, axis=0)
+        # Update model squared accumulator
+        self.model_sq_sum += np.sum(np.square(data), axis=0)
+        data = data.reshape((data.shape[0], -1))
+        # Update product accumulator
+        self.prod_sum += np.matmul(data.T, traces)
 
-        # Update accumulators
-        self.internal_state_update(traces.astype(np.float32), model)
 
     def calculate(self):
         # Sample mean computation
@@ -164,7 +176,7 @@ class CPA(Engine):
         self.prod_sum = np.zeros((256 * num_bytes, sample_length),dtype=np.float32)
 
     # Update the values using the current batch of trace samples and the computed model incrementing the vals into the accumulators
-    def internal_state_update(self, traces:np.ndarray, data:np.ndarray):
+    def update(self, traces:np.ndarray, data:np.ndarray):
         # Update the number of rows processed
         self.trace_count += traces.shape[0]
         # Update sample accumulator
@@ -179,7 +191,7 @@ class CPA(Engine):
         # Update product accumulator
         self.prod_sum += np.matmul(data.T, traces)
 
-    def _get_candidate(self, result):
+    def find_candidate(self, result):
         candidate = [None for _ in range(result.shape[0])]
 
         for i in range(result.shape[0]):

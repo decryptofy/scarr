@@ -26,19 +26,19 @@ class Engine:
                 (tile_x, tile_y) = tile
                 for byte in container.bytes:
                     workload.append((self, container, tile_x, tile_y, byte))
-            starmap_results = pool.starmap(self._run, workload, chunksize=1) #possibly more testing needed
+            starmap_results = pool.starmap(self.run_workload, workload, chunksize=1) #possibly more testing needed
             pool.close()
             pool.join()
 
-            for tile_x, tile_y, byte_pos, _result in starmap_results:
+            for tile_x, tile_y, byte_pos, tmp_result in starmap_results:
                 tile_index = list(container.tiles).index((tile_x, tile_y))
                 byte_index = list(container.bytes).index(byte_pos)
-                final_results[tile_index, byte_index] = _result
+                final_results[tile_index, byte_index] = tmp_result
 
             self.final_results = final_results
 
     @staticmethod
-    def _run(self, container, tile_x, tile_y, byte):
+    def run_workload(self, container, tile_x, tile_y, byte):
         self.populate(container.sample_length)
         container.configure(tile_x, tile_y, [byte])
         if container.fetch_async:
@@ -47,7 +47,7 @@ class Engine:
             for batch in container.get_batches(tile_x, tile_y, byte):
                 self.update(batch[-1], np.squeeze(batch[0]))
 
-        return tile_x, tile_y, byte, self._get_result()
+        return tile_x, tile_y, byte, self.calculate()
     
     async def batch_loop(self, container):
         index = 0
@@ -77,14 +77,6 @@ class Engine:
         pass
 
     def calculate(self):
-        pass
-
-    def _get_result(self):
-        """
-        Function for finalizing the calculations of an algorithm.
-        Gets passed in nothing.
-        Returns Results.
-        """
         pass
 
     def get_result(self):
