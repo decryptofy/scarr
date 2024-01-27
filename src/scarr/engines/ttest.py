@@ -68,7 +68,7 @@ class Ttest(Engine):
         else:
             results[0] = np.divide(self.sums2, self.traces_len)
             results[1] = np.subtract(np.divide(self.sums_sq2, self.traces_len), (results[0]**2))
-        
+
         return results
 
     def run(self, container):
@@ -78,7 +78,7 @@ class Ttest(Engine):
         self.batch_size = container.data.batch_size
         interm_results = np.empty((len(container.tiles), 2, 2, container.min_samples_length), dtype=np.float32)
         final_results = np.zeros((len(container.tiles), container.min_samples_length), dtype=np.float32)
-        trace_counts = [0,1]
+        trace_counts = [0, 1]
         # Begin multiprocess pool of tasks
         pool = Pool()
         workload = []
