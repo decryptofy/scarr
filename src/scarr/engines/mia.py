@@ -150,7 +150,7 @@ class MIA(Engine):
 
             self.update(samples, plaintext)
 
-        result = self.calculate().swapaxes(0,1)
+        result = self.calculate().swapaxes(0, 1)
         self.results[converge_index, :, :] = result
         self.candidates[converge_index] = self.find_candidate(result)
 

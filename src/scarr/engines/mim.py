@@ -11,9 +11,10 @@ import numba as nb
 from multiprocessing.pool import Pool
 import asyncio
 
+
 class MIM(Engine):
     def __init__(self, bin_num=9):
-        
+
         self.bin_num = bin_num
         self.bins = None
 
@@ -21,7 +22,11 @@ class MIM(Engine):
         self.histogram = None
 
     def run(self, container):
-        histogram = np.zeros((len(container.tiles), len(container.bytes), 256, container.sample_length, self.bin_num), dtype=np.uint16)
+        histogram = np.zeros((len(container.tiles),
+                              len(container.bytes),
+                              256,
+                              container.sample_length,
+                              self.bin_num), dtype=np.uint16)
         with Pool() as pool:
             tile_workload = []
             hist_workload = []
@@ -76,47 +81,51 @@ class MIM(Engine):
 
         while len(batch) > 0:
             data = np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
-            task=asyncio.create_task(self.async_update(batch[-1], data))
+            task = asyncio.create_task(self.async_update(batch[-1], data))
             batch = container.get_batch_index(index)
             index += 1
             await task
 
-    async def async_update(self, traces:np.ndarray, data:np.ndarray):
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
 
-        self.histogram_along_axis(traces=traces, data=data, nx=self.bin_num, xmin=self.bins[0], normx=self.norm, count=self.byte_histogram)
+        self.histogram_along_axis(traces=traces,
+                                  data=data, nx=self.bin_num,
+                                  xmin=self.bins[0],
+                                  normx=self.norm,
+                                  count=self.byte_histogram)
 
     @staticmethod
     @nb.njit(parallel=True)
     def histogram_along_axis(traces, data, nx, xmin, normx, count):
         for sample in nb.prange(traces.shape[1]):
             local_count = np.empty((256, nx), dtype=np.uint16)
-            local_count[:,:] = 0
+            local_count[:, :] = 0
             for trace in range(traces.shape[0]):
                 ix = min(nx-1, (traces[trace, sample] - xmin) * normx)
                 local_count[data[trace], int(ix)] += 1
 
             count[:, sample, :] += local_count
-    
+
     def calculate(self):
         trace_hist = self.histogram.sum(axis=2)
 
         trace_counts = trace_hist.sum(axis=3)
-        trace_counts[trace_counts==0] = 1
+        trace_counts[trace_counts == 0] = 1
 
-        #trace_pdf = (trace_hist.swapaxes(2,3) / trace_counts).swapaxes(3, 2)
-        trace_pdf = (trace_hist.swapaxes(2,3) / trace_counts[:,:,None,:]).swapaxes(3, 2)
+        # trace_pdf = (trace_hist.swapaxes(2,3) / trace_counts).swapaxes(3, 2)
+        trace_pdf = (trace_hist.swapaxes(2, 3) / trace_counts[:, :, None, :]).swapaxes(3, 2)
         trace_pdf[trace_pdf == 0] = 1
 
         trace_profile_counts = self.histogram.sum(axis=4)
         trace_profile_counts[trace_profile_counts==0] = 1
 
-        trace_profile_pdf = (self.histogram.swapaxes(3,4).swapaxes(2,3) / trace_profile_counts[:,0]).swapaxes(2,3).swapaxes(3,4)
-        trace_profile_pdf[trace_profile_pdf==0] = 1
+        trace_profile_pdf = (self.histogram.swapaxes(3, 4).swapaxes(2, 3) / trace_profile_counts[:, 0]).swapaxes(2, 3).swapaxes(3, 4)
+        trace_profile_pdf[trace_profile_pdf == 0] = 1
 
-        #profile_probabilities = trace_profile_counts / trace_counts
-        profile_probabilities = trace_profile_counts / trace_counts[:,:,None,:]
+        # profile_probabilities = trace_profile_counts / trace_counts
+        profile_probabilities = trace_profile_counts / trace_counts[:, :, None, :]
 
-        trace_entropy = np.sum(trace_pdf * np.log2(trace_pdf), axis = 3)
+        trace_entropy = np.sum(trace_pdf * np.log2(trace_pdf), axis=3)
 
         trace_profile_entropy = profile_probabilities * np.sum(trace_profile_pdf * np.log2(trace_profile_pdf), axis=4)
 
