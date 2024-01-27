@@ -28,24 +28,18 @@ class Ttest(Engine):
         # Results
         self.final_results = None
 
-
     def populate(self, trace):
-        try:
-            if trace == 0:
-                self.sums1 = np.zeros((self.samples_len), dtype=np.float32)
-                self.sums_sq1 = np.zeros((self.samples_len), dtype=np.float32)
-            else:
-                self.sums2 = np.zeros((self.samples_len), dtype=np.float32)
-                self.sums_sq2 = np.zeros((self.samples_len), dtype=np.float32)
-        except:
-            print("T-test: Error populating")
-    
-    
+        if trace == 0:
+            self.sums1 = np.zeros((self.samples_len), dtype=np.float32)
+            self.sums_sq1 = np.zeros((self.samples_len), dtype=np.float32)
+        else:
+            self.sums2 = np.zeros((self.samples_len), dtype=np.float32)
+            self.sums_sq2 = np.zeros((self.samples_len), dtype=np.float32)
+
     def accumulate_batch(self, batches, sum, sum_sq):
         # Run accumulation algorithm on each batch
         for batch in batches:
             self.internal_state_update(batch[-1], sum, sum_sq)
-
 
     @staticmethod
     @nb.njit(parallel=True, nogil=True)
@@ -58,14 +52,12 @@ class Ttest(Engine):
             sum[sample] += trace_column.sum()
             sum_sq[sample] += trace_column.T @ trace_column
 
-
     async def async_update(self, trace: np.ndarray, trace_number):
         # Run one-pass algorithm on correct traces
         if trace_number == 0:
             self.internal_state_update(trace, self.sums1, self.sums_sq1)
         else:
             self.internal_state_update(trace, self.sums2, self.sums_sq2)
-
 
     def calculate(self, trace):
         results = np.zeros((2, self.samples_len), dtype=np.float32)
@@ -78,7 +70,6 @@ class Ttest(Engine):
             results[1] = np.subtract(np.divide(self.sums_sq2, self.traces_len), (results[0]**2))
         
         return results
-    
 
     def run(self, container):
         # Initialize dimensional variables and populate arrays
@@ -105,10 +96,11 @@ class Ttest(Engine):
             interm_results[tile_index, trace] = _result
         # Compute each tile's t-values
         for tile in range(len(container.tiles)):
-            final_results[tile] = np.divide(interm_results[tile,0,0] - interm_results[tile,1,0], np.sqrt(np.divide(interm_results[tile,0,1] + interm_results[tile,1,1], self.traces_len)))
+            final_results[tile] = np.divide(interm_results[tile, 0, 0] - interm_results[tile, 1, 0],
+                                            np.sqrt(np.divide(interm_results[tile, 0, 1] + interm_results[tile, 1, 1],
+                                            self.traces_len)))
 
         self.final_results = final_results
-    
 
     @staticmethod
     def run_workload(self, container, tile_x, tile_y, trace):
@@ -132,7 +124,6 @@ class Ttest(Engine):
                 self.accumulate_batch(batches, self.sums2, self.sums_sq2)
         # Done
         return tile_x, tile_y, self.calculate(trace), trace
-    
 
     async def batch_loop(self, container, trace_number):
         index = 0
@@ -144,4 +135,3 @@ class Ttest(Engine):
             task = asyncio.create_task(self.async_update(trace, trace_number))
             index += 1
             await task
-     
