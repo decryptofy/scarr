@@ -117,7 +117,7 @@ class MIM(Engine):
         trace_pdf[trace_pdf == 0] = 1
 
         trace_profile_counts = self.histogram.sum(axis=4)
-        trace_profile_counts[trace_profile_counts==0] = 1
+        trace_profile_counts[trace_profile_counts == 0] = 1
 
         trace_profile_pdf = (self.histogram.swapaxes(3, 4).swapaxes(2, 3) / trace_profile_counts[:, 0]).swapaxes(2, 3).swapaxes(3, 4)
         trace_profile_pdf[trace_profile_pdf == 0] = 1
