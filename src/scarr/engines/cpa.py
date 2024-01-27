@@ -164,7 +164,7 @@ class CPA(Engine):
 
         denominator[denominator == 0] = 1
 
-        return np.divide(numerator, denominator).swapaxes(0,1)
+        return np.divide(numerator, denominator).swapaxes(0, 1)
 
     def get_candidate(self):
         return self.final_candidates
