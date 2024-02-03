@@ -13,6 +13,12 @@ authors = [
 description = "A high-performance SCA library for datasets that include NxM EM trace grids."
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = [
+	'numpy',
+	'numba',
+	'zarr[jupyter]',
+	'ruff',
+]
 license = {text = "MPL-2.0"}
 classifiers = [
     "Programming Language :: Python :: 3",
