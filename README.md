@@ -90,7 +90,7 @@ This Source Code Form is "Incompatible With Secondary Licenses", as defined by t
 SCARR was initiated and designed by Vincent Immler out of a necessity to support his teaching and research at Oregon State University. Under his guidance, two undergraduate students at Oregon State University, Jonah Bosland and Stefan Ene, developed the majority of the initial implementation during the summer 2023. Peter Baumgartner helped us with the testing and analysis on NUMA platforms.
 
 Additional contributions by (new authors, add yourself here):
-* to be added
+* Matt Ruff
 * to be added
 
 # Copyright
