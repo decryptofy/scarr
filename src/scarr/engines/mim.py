@@ -10,16 +10,19 @@ from .engine import Engine
 import numba as nb
 from multiprocessing.pool import Pool
 import asyncio
+from ..models.keyAdd import KeyAdd
 
 
 class MIM(Engine):
-    def __init__(self, bin_num=9):
+    def __init__(self, bin_num=9, model=KeyAdd()):
 
         self.bin_num = bin_num
         self.bins = None
 
         self.final_results = None
         self.histogram = None
+
+        super().__init__(model)
 
     def run(self, container):
         histogram = np.zeros((len(container.tiles),
@@ -62,7 +65,7 @@ class MIM(Engine):
                     self.bins = np.linspace(min, max, self.bin_num + 1)
                     self.norm = np.float64(float(self.bin_num) / (max - min))
 
-                data = np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
+                data = self.model.calculate(batch[:-1])
                 self.histogram_along_axis(batch[-1], data, self.bin_num, self.bins[0], self.norm, self.byte_histogram)
 
         return tile_x, tile_y, byte, self.byte_histogram
@@ -80,7 +83,7 @@ class MIM(Engine):
         self.norm = np.float64(float(self.bin_num) / (max - min))
 
         while len(batch) > 0:
-            data = np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
+            data = self.model.calculate(batch[:-1])
             task = asyncio.create_task(self.async_update(batch[-1], data))
             batch = container.get_batch_index(index)
             index += 1

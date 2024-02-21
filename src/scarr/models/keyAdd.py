@@ -9,24 +9,15 @@ import numpy as np
 from .model import Model
 from .utils import WEIGHTS, KEYS
 
+
 class KeyAdd(Model):
 
     def __init__(self) -> None:
         self.num_vals = 9
         self.vals = np.arange(9)
 
-    def calculate(self, plaintext: np.ndarray, key):
-        inputs = np.bitwise_xor(plaintext, key)
+    def calculate(self, batch):
+        return np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
 
-        return WEIGHTS[inputs]
-    
-    def calculate_table(self, plaintext: np.ndarray):
-        inputs = np.bitwise_xor(plaintext, KEYS)
-
-        return WEIGHTS[inputs]
-    
-    def calculate_profile(self, batch):
-
-        inputs = np.bitwise_xor(batch[0], batch[1])
-
-        return WEIGHTS[inputs]
+    def calculate_table(self, batch):
+        return np.bitwise_xor(batch[0], KEYS, dtype=np.uint8)

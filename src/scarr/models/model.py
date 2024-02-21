@@ -7,15 +7,16 @@
 
 import numpy as np
 
+
 class Model:
 
     def __init__(self) -> None:
         pass
 
-    def calculate(self, plaintext: np.ndarray, key):
+    def calculate(self, batch):
         pass
 
-    def calculate_table(self, plaintext: np.ndarray):
+    def calculate_table(self, batch):
         pass
 
     def calculate_profile(self, batch):

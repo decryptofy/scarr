@@ -15,7 +15,8 @@ class Engine:
     """
     Base class that engines inherit from.
     """
-    def __init__(self):
+    def __init__(self, model):
+        self.model = model
         pass
 
     def run(self, container):
@@ -46,7 +47,7 @@ class Engine:
             asyncio.run(self.batch_loop(container))
         else:
             for batch in container.get_batches(tile_x, tile_y, byte):
-                self.update(batch[-1], np.squeeze(batch[0]))
+                self.update(batch[-1], self.model.calculate(batch[:-1]))
 
         return tile_x, tile_y, byte, self.calculate()
 
@@ -56,12 +57,12 @@ class Engine:
         index += 1
 
         while len(batch) > 0:
-            task = asyncio.create_task(self.async_update(batch[-1], np.squeeze(batch[0])))
+            task = asyncio.create_task(self.async_update(batch[-1], self.model.calculate(batch[:-1])))
             batch = container.get_batch_index(index)
             index += 1
             await task
 
-    def update(self, traces: np.ndarray, plaintext: np.ndarray):
+    def update(self, traces: np.ndarray, data: np.ndarray):
         """
         Function that updates the statistics of the algorithm to be called by the container class.
         Gets passed in an array of traces and an array of plaintext from the trace_handler class.
@@ -69,7 +70,7 @@ class Engine:
         """
         pass
 
-    async def async_update(self, traces: np.ndarray, plaintext: np.ndarray):
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
         """
         Function that updates the statistics of the algorithm to be called by the container class.
         Gets passed in an array of traces and an array of plaintext from the trace_handler class.

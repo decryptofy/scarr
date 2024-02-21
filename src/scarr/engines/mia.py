@@ -15,8 +15,6 @@ import asyncio
 class MIA(Engine):
 
     def __init__(self, model, bin_num=9, convergence_step=None) -> None:
-
-        self.model = model
         self.bin_num = bin_num
 
         self.bins = None
@@ -25,6 +23,8 @@ class MIA(Engine):
         self.convergence_step = convergence_step
         self.candidates = None
         self.results = None
+
+        super().__init__(model)
 
     def run(self, container):
         final_results = None
@@ -76,9 +76,7 @@ class MIA(Engine):
 
         return tile_x, tile_y, byte, self.results, self.candidates
 
-    def update(self, traces: np.ndarray, plaintext: np.ndarray):
-        model = self.model.calculate_table(np.squeeze(plaintext))
-
+    def update(self, traces: np.ndarray, data: np.ndarray):
         min = self.bins[0]
         max = self.bins[-1]
 
@@ -86,11 +84,9 @@ class MIA(Engine):
 
         normx = np.float64(float(bins) / (max - min))
 
-        self.histogram_along_axis(traces, model.astype(np.uint8), bins, min, normx, self.histogram)
+        self.histogram_along_axis(traces, data.astype(np.uint8), bins, min, normx, self.histogram)
 
-    async def async_update(self, traces: np.ndarray, plaintext: np.ndarray):
-        model = self.model.calculate_table(np.squeeze(plaintext))
-
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
         min = self.bins[0]
         max = self.bins[-1]
 
@@ -98,7 +94,7 @@ class MIA(Engine):
 
         normx = np.float64(float(bins) / (max - min))
 
-        self.histogram_along_axis(traces, model.astype(np.uint8), bins, min, normx, self.histogram)
+        self.histogram_along_axis(traces, data.astype(np.uint8), bins, min, normx, self.histogram)
 
     def calculate(self):
         trace_hist = self.histogram.sum(axis=0)
@@ -142,13 +138,13 @@ class MIA(Engine):
                 traces_processed = 0
                 converge_index += 1
 
-            plaintext = batch[0]
-            samples = batch[-1]
+            data = self.model.calculate_table(batch[:-1])
+            traces = batch[-1]
 
             if self.bins is None:
                 self.bins = np.linspace(np.min(batch[-1]), np.max(batch[-1]), self.bin_num + 1)
 
-            self.update(samples, plaintext)
+            self.update(traces, data)
 
         result = self.calculate().swapaxes(0, 1)
         self.results[converge_index, :, :] = result
@@ -173,7 +169,7 @@ class MIA(Engine):
                 traces_processed = 0
                 converge_index += 1
 
-            task = asyncio.create_task(self.async_update(batch[-1], batch[0]))
+            task = asyncio.create_task(self.async_update(batch[-1], self.model.calculate_table(batch[:-1])))
             traces_processed += batch[-1].shape[0]
             batch = container.get_batch_index(index)
             index += 1

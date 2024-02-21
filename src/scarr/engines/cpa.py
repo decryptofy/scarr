@@ -14,8 +14,6 @@ import asyncio
 class CPA(Engine):
 
     def __init__(self, model, convergence_step=None) -> None:
-        self.model = model
-
         self.trace_count = 0
         self.model_sum = None
         self.model_sq_sum = None
@@ -28,6 +26,8 @@ class CPA(Engine):
         self.convergence_step = convergence_step
         self.candidate = None
         self.results = None
+
+        super().__init__(model)
 
     def run(self, container):
         self.final_results = None
@@ -84,7 +84,7 @@ class CPA(Engine):
                     converge_index += 1
 
                 # Generate modeled power values for plaintext values
-                model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[0])
+                model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[:-1])
                 traces = batch[-1].astype(np.float32)
 
                 self.update(traces, model)

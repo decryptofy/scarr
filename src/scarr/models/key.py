@@ -7,25 +7,14 @@
 
 import numpy as np
 from .model import Model
-from .utils import AES_SBOX, WEIGHTS, KEYS
+from .utils import WEIGHTS, KEYS
 
 
-class SubBytes_weight(Model):
+class Key(Model):
 
     def __init__(self) -> None:
-        self.num_vals = 9
-        self.vals = np.arange(9)
+        self.num_vals = 256
+        self.vals = np.arange(256)
 
     def calculate(self, batch):
-        inputs = np.bitwise_xor(batch[0], batch[1])
-
-        outputs = AES_SBOX[inputs]
-
-        return WEIGHTS[outputs]
-
-    def calculate_table(self, batch):
-        inputs = np.bitwise_xor(np.squeeze(batch[0]), KEYS)
-
-        outputs = AES_SBOX[inputs]
-
-        return WEIGHTS[outputs]
+        return np.squeeze(batch[1])

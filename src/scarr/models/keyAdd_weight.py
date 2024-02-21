@@ -7,10 +7,10 @@
 
 import numpy as np
 from .model import Model
-from .utils import AES_SBOX, WEIGHTS, KEYS
+from .utils import WEIGHTS, KEYS
 
 
-class SubBytes_distance(Model):
+class KeyAddWeight(Model):
 
     def __init__(self) -> None:
         self.num_vals = 9
@@ -19,13 +19,9 @@ class SubBytes_distance(Model):
     def calculate(self, batch):
         inputs = np.bitwise_xor(batch[0], batch[1])
 
-        outputs = AES_SBOX[inputs]
-
-        return WEIGHTS[np.bitwise_xor(inputs, outputs)]
+        return WEIGHTS[inputs]
 
     def calculate_table(self, batch):
-        inputs = np.bitwise_xor(np.squeeze(batch[0]), KEYS)
+        inputs = np.bitwise_xor(batch[0], KEYS)
 
-        outputs = AES_SBOX[inputs]
-
-        return WEIGHTS[np.bitwise_xor(inputs, outputs)]
+        return WEIGHTS[inputs]

@@ -8,22 +8,25 @@
 import numpy as np
 import numba as nb
 from .engine import Engine
+from ..models.plainText import PlainText
 
 
 class NICV(Engine):
 
-    def __init__(self) -> None:
+    def __init__(self, model=PlainText()) -> None:
         # Creating all of the necessary information containers to compute the SNR
         self.trace_counts = None
         self.means = None
         self.moments = None
         self.results = None
+        
+        super().__init__(model)
 
-    def update(self, traces: np.ndarray, plaintext: np.ndarray):
-        self.internal_state_update(traces, plaintext, self.trace_counts, self.sum, self.sum_sq)
+    def update(self, traces: np.ndarray, data: np.ndarray):
+        self.internal_state_update(traces, data, self.trace_counts, self.sum, self.sum_sq)
 
-    async def async_update(self, traces: np.ndarray, plaintext: np.ndarray):
-        self.internal_state_update(traces, plaintext, self.trace_counts, self.sum, self.sum_sq)
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
+        self.internal_state_update(traces, data, self.trace_counts, self.sum, self.sum_sq)
 
     def calculate(self):
 
