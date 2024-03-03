@@ -6,18 +6,16 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 import numpy as np
+from .model_value import ModelValue
 
 
-class Model:
-
-    def __init__(self) -> None:
-        pass
-
-    def calculate(self, batch):
-        pass
+class GuessModelValue(ModelValue):
 
     def calculate_table(self, batch):
         pass
 
-    def calculate_profile(self, batch):
+    def calculate_all_tables(self, batch):
+        pass
+
+    def calculate_all_tables_helper(self, data):
         pass

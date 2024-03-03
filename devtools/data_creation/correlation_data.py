@@ -1,14 +1,14 @@
 import numpy as np
-from src.scarr.models.utils import AES_SBOX
+from src.scarr.model_values.utils import AES_SBOX
 
 class CorrelationData:
 
-    def __init__(self, num_traces, sample_length, bytes=[0]) -> None:
+    def __init__(self, num_traces, sample_length, model_pos=[0]) -> None:
         self.num_traces = num_traces
         self.sample_length = sample_length
         self.batch_size = 5000
         self.tiles = [(0,0)]
-        self.bytes = bytes
+        self.model_positions = model_pos
         self.key = None
         self.plaintext = None
         self.traces = None
@@ -19,7 +19,7 @@ class CorrelationData:
         l = self.sample_length # number of points per trace
 
         self.key = np.random.randint(0, 256, (16)) # just one key = 1x16
-        self.plaintext = np.random.randint(0, 256, (N, 16)) # 5000x16 plaintext bytes
+        self.plaintext = np.random.randint(0, 256, (N, 16)) # 5000x16 plaintext positions
 
         self.traces = np.zeros((N, l), dtype=np.int64)
 
@@ -27,14 +27,14 @@ class CorrelationData:
         self.traces = np.random.randint(-128, +128, (N, l), dtype=np.int64)
 
         # Put leakage where it is needed
-        for byte in range(16):
-            leak_plaintext = self.plaintext[:,byte]
-            leak_sbox_out = AES_SBOX[self.plaintext[:, byte] ^ self.key[byte]]
-            self.traces[:,4+byte] = np.subtract(leak_plaintext,128, dtype=np.int16)
-            self.traces[:,24+byte] = np.subtract(leak_sbox_out,128, dtype=np.int16)
+        for model_pos in range(16):
+            leak_plaintext = self.plaintext[:,model_pos]
+            leak_sbox_out = AES_SBOX[self.plaintext[:, model_pos] ^ self.key[model_pos]]
+            self.traces[:,4+model_pos] = np.subtract(leak_plaintext,128, dtype=np.int16)
+            self.traces[:,24+model_pos] = np.subtract(leak_sbox_out,128, dtype=np.int16)
 
-    def configure(self, tile_x, tile_y, bytes, convergence_step=None):
-        self.bytes = bytes
+    def configure(self, tile_x, tile_y, model_positions, convergence_step=None):
+        self.model_positions = model_positions
         self.slices = []
         batch_start_index = 0
         while batch_start_index < self.num_traces:
@@ -53,17 +53,17 @@ class CorrelationData:
     def get_key(self):
         return self.key
     
-    def get_byte_batch(self, slice, byte):
+    def get_byte_batch(self, slice, model_pos):
 
-        return [self.plaintext[slice, [byte]], self.key[[byte]], self.traces[slice,:]]
+        return [self.plaintext[slice, [model_pos]], self.key[[model_pos]], self.traces[slice,:]]
     
-    def get_batches_by_byte(self, tile_x, tile_y, byte):
+    def get_batches_by_byte(self, tile_x, tile_y, model_pos):
         for slice in self.slices:
-            yield self.get_byte_batch(slice, byte)
+            yield self.get_byte_batch(slice, model_pos)
     
     def get_batch(self, slice):
 
-        return [self.plaintext[slice,self.bytes], self.key[self.bytes], self.traces[slice,:]]
+        return [self.plaintext[slice,self.model_positions], self.key[self.model_positions], self.traces[slice,:]]
     
     def get_batches_all(self, tile_x, tile_y):
         for slice in self.slices:
@@ -74,4 +74,4 @@ class CorrelationData:
         if index >= len(self.slices):
             return []
         
-        return [self.plaintext[self.slices[index], self.bytes], self.key[self.bytes], self.traces[self.slices[index], :]]
+        return [self.plaintext[self.slices[index], self.model_positions], self.key[self.model_positions], self.traces[self.slices[index], :]]

@@ -5,22 +5,21 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+from .engine import Engine
+from ..model_values.plaintext import PlainText
 import numpy as np
 import numba as nb
-from .engine import Engine
-from ..models.plainText import PlainText
 
 
 class NICV(Engine):
 
-    def __init__(self, model=PlainText()) -> None:
-        # Creating all of the necessary information containers to compute the SNR
+    def __init__(self, model_value=PlainText()) -> None:
         self.trace_counts = None
         self.means = None
         self.moments = None
         self.results = None
         
-        super().__init__(model)
+        super().__init__(model_value)
 
     def update(self, traces: np.ndarray, data: np.ndarray):
         self.internal_state_update(traces, data, self.trace_counts, self.sum, self.sum_sq)
@@ -45,18 +44,15 @@ class NICV(Engine):
 
     @staticmethod
     @nb.njit(parallel=True, fastmath=True)
-    def internal_state_update(traces: np.ndarray, plaintext: np.ndarray, counts, sums, sums_sq):
+    def internal_state_update(traces: np.ndarray, data: np.ndarray, counts, sums, sums_sq):
         for sample in nb.prange(traces.shape[1]):
             for trace in range(traces.shape[0]):
                 if sample == 0:
-                    counts[plaintext[trace]] += 1
-                sums[plaintext[trace], sample] += traces[trace, sample]
-                sums_sq[plaintext[trace], sample] += np.square(traces[trace, sample])
+                    counts[data[trace]] += 1
+                sums[data[trace], sample] += traces[trace, sample]
+                sums_sq[data[trace], sample] += np.square(traces[trace, sample])
 
     def populate(self, sample_length):
-        # Count for each plaintext value
-        self.trace_counts = np.zeros((256), dtype=np.uint16)
-        # Mean value for each hex value and each sample point
-        self.sum = np.zeros((256, sample_length), dtype=np.float32)
-        # Moment value for each hex value and each sample point
-        self.sum_sq = np.zeros((256, sample_length), dtype=np.float32)
+        self.trace_counts = np.zeros((self.model_value.num_vals), dtype=np.uint16)
+        self.sum = np.zeros((self.model_value.num_vals, sample_length), dtype=np.float32)
+        self.sum_sq = np.zeros((self.model_value.num_vals, sample_length), dtype=np.float32)

@@ -5,10 +5,11 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+from .engine import Engine
+from ..model_values.plaintext import PlainText
 import numpy as np
 import numba as nb
-from .engine import Engine
-from ..models.plainText import PlainText
+
 
 class SNR(Engine):
 
@@ -45,7 +46,7 @@ class SNR(Engine):
 
     @staticmethod
     @nb.njit(parallel=True, cache=True, nogil=True)
-    def internal_state_update(traces: np.ndarray, plaintext: np.ndarray, counts, sums, sums_sq):
+    def internal_state_update(traces: np.ndarray, data: np.ndarray, counts, sums, sums_sq):
         for sample in nb.prange(traces.shape[1]):
             local_sums = np.empty(256, dtype=np.float64)
             local_sums_sq = np.empty(256, dtype=np.float64)
@@ -55,9 +56,9 @@ class SNR(Engine):
             local_counts[:] = 0
             for trace in range(traces.shape[0]):
                 if sample == 0:
-                    local_counts[plaintext[trace]] += 1
-                local_sums[plaintext[trace]] += traces[trace, sample]
-                local_sums_sq[plaintext[trace]] += traces[trace, sample]**2
+                    local_counts[data[trace]] += 1
+                local_sums[data[trace]] += traces[trace, sample]
+                local_sums_sq[data[trace]] += traces[trace, sample]**2
 
             sums[:, sample] += local_sums
             sums_sq[:, sample] += local_sums_sq
@@ -65,19 +66,8 @@ class SNR(Engine):
 
     def populate(self, sample_length):
         # Count for each plaintext value
-        self.trace_counts = np.zeros((256), dtype=np.uint32)
+        self.trace_counts = np.zeros((self.model_value.num_vals), dtype=np.uint32)
         # Mean value for each hex value and each sample point
-        self.sum = np.zeros((256, sample_length), dtype=np.float64)
+        self.sum = np.zeros((self.model_value.num_vals, sample_length), dtype=np.float64)
         # Moment value for each hex value and each sample point
-        self.sum_sq = np.zeros((256, sample_length), dtype=np.float64)
-
-
-class SNR_Evaluator(SNR):
-
-    @staticmethod
-    def _run(self, container, tile_x, tile_y, byte):
-        for batch in container.get_batches_by_byte(tile_x, tile_y, byte):
-            profiled_text = np.squeeze(np.bitwise_xor(batch[0], batch[1]))
-            self.update(batch[-1], profiled_text)
-
-        return tile_x, tile_y, byte, self._get_result()
+        self.sum_sq = np.zeros((self.model_value.num_vals, sample_length), dtype=np.float64)

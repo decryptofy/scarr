@@ -5,51 +5,52 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
+from ..model_values.model_value import ModelValue
 from multiprocessing.pool import Pool
-import os
+import numpy as np
 import asyncio
+import os
 
 
 class Engine:
     """
     Base class that engines inherit from.
     """
-    def __init__(self, model):
-        self.model = model
+    def __init__(self, model_value: ModelValue):
+        self.model_value = model_value
         pass
 
     def run(self, container):
-        final_results = np.zeros((len(container.tiles), len(container.bytes), container.sample_length), dtype=np.float32)
+        final_results = np.zeros((len(container.tiles), len(container.model_positions), container.sample_length), dtype=np.float32)
         # with Pool(processes=int(os.cpu_count()/2),maxtasksperchild=1000) as pool: #used for benchmarking
         with Pool(processes=int(os.cpu_count()/2)) as pool:
             workload = []
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
-                for byte in container.bytes:
-                    workload.append((self, container, tile_x, tile_y, byte))
+                for model_pos in container.model_positions:
+                    workload.append((self, container, tile_x, tile_y, model_pos))
             starmap_results = pool.starmap(self.run_workload, workload, chunksize=1)  # Possibly more testing needed
             pool.close()
             pool.join()
 
-            for tile_x, tile_y, byte_pos, tmp_result in starmap_results:
+            for tile_x, tile_y, model_pos, tmp_result in starmap_results:
                 tile_index = list(container.tiles).index((tile_x, tile_y))
-                byte_index = list(container.bytes).index(byte_pos)
-                final_results[tile_index, byte_index] = tmp_result
+                model_pos_index = list(container.model_positions).index(model_pos)
+                final_results[tile_index, model_pos_index] = tmp_result
 
             self.final_results = final_results
 
     @staticmethod
-    def run_workload(self, container, tile_x, tile_y, byte):
+    def run_workload(self, container, tile_x, tile_y, model_pos):
         self.populate(container.sample_length)
-        container.configure(tile_x, tile_y, [byte])
+        container.configure(tile_x, tile_y, [model_pos])
         if container.fetch_async:
             asyncio.run(self.batch_loop(container))
         else:
-            for batch in container.get_batches(tile_x, tile_y, byte):
-                self.update(batch[-1], self.model.calculate(batch[:-1]))
+            for batch in container.get_batches(tile_x, tile_y, model_pos):
+                self.update(batch[-1], self.model_value.calculate(batch[:-1]))
 
-        return tile_x, tile_y, byte, self.calculate()
+        return tile_x, tile_y, model_pos, self.calculate()
 
     async def batch_loop(self, container):
         index = 0
@@ -57,7 +58,7 @@ class Engine:
         index += 1
 
         while len(batch) > 0:
-            task = asyncio.create_task(self.async_update(batch[-1], self.model.calculate(batch[:-1])))
+            task = asyncio.create_task(self.async_update(batch[-1], self.model_value.calculate(batch[:-1])))
             batch = container.get_batch_index(index)
             index += 1
             await task
@@ -92,5 +93,5 @@ class Engine:
         """
         pass
 
-    def get_points(self, lower_lim, tile_index=0, byte_index=0,):
-        return list(np.where(np.abs(self.final_results[tile_index, byte_index]) >= lower_lim)[0])
+    def get_points(self, lower_lim, tile_index=0, model_pos_index=0,):
+        return list(np.where(np.abs(self.final_results[tile_index, model_pos_index]) >= lower_lim)[0])

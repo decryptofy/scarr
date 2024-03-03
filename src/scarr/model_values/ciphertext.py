@@ -6,18 +6,15 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 import numpy as np
-from .model import Model
+from .model_value import ModelValue
 from .utils import WEIGHTS, KEYS
 
 
-class KeyAdd(Model):
+class CipherText(ModelValue):
 
     def __init__(self) -> None:
-        self.num_vals = 9
-        self.vals = np.arange(9)
+        self.num_vals = 256
+        self.vals = np.arange(256)
 
     def calculate(self, batch):
-        return np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
-
-    def calculate_table(self, batch):
-        return np.bitwise_xor(batch[0], KEYS, dtype=np.uint8)
+        return np.squeeze(batch[2])

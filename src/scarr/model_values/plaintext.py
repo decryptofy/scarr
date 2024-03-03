@@ -6,15 +6,15 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 import numpy as np
-from .model import Model
+from .model_value import ModelValue
 from .utils import WEIGHTS, KEYS
 
 
-class Key(Model):
+class PlainText(ModelValue):
 
     def __init__(self) -> None:
         self.num_vals = 256
         self.vals = np.arange(256)
 
     def calculate(self, batch):
-        return np.squeeze(batch[1])
+        return np.squeeze(batch[0])

@@ -5,9 +5,9 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
 from .engine import Engine
 from multiprocessing.pool import Pool
+import numpy as np
 import asyncio
 
 
