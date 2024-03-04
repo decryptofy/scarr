@@ -13,14 +13,14 @@ import numba as nb
 
 class SNR(Engine):
 
-    def __init__(self, model=PlainText()) -> None:
+    def __init__(self, model_value=PlainText()) -> None:
         # Creating all of the necessary information containers to compute the SNR
         self.trace_counts = None
         self.means = None
         self.moments = None
         self.results = None
 
-        super().__init__(model)
+        super().__init__(model_value)
 
     def update(self, traces: np.ndarray, data: np.ndarray):
         self.internal_state_update(traces, data, self.trace_counts, self.sum, self.sum_sq)
