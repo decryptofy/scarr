@@ -5,25 +5,27 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
 from .engine import Engine
-import numba as nb
+from ..model_values.key_add import KeyAdd
 from multiprocessing.pool import Pool
+import numpy as np
+import numba as nb
 import asyncio
 
 
 class MIM(Engine):
-    def __init__(self, bin_num=9):
-
+    def __init__(self, bin_num=9, model_value=KeyAdd()):
         self.bin_num = bin_num
         self.bins = None
 
         self.final_results = None
         self.histogram = None
 
+        super().__init__(model_value)
+
     def run(self, container):
         histogram = np.zeros((len(container.tiles),
-                              len(container.bytes),
+                              len(container.model_positions),
                               256,
                               container.sample_length,
                               self.bin_num), dtype=np.uint16)
@@ -33,39 +35,39 @@ class MIM(Engine):
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
                 tile_workload.append((self, container, tile_x, tile_y))
-                for byte in container.bytes:
-                    hist_workload.append((self, container, tile_x, tile_y, byte))
+                for model_pos in container.model_positions:
+                    hist_workload.append((self, container, tile_x, tile_y, model_pos))
 
             starmap_results = pool.starmap(self.run_workload, hist_workload)
             pool.close()
             pool.join()
 
-            for tile_x, tile_y, byte_pos,  result in starmap_results:
+            for tile_x, tile_y, model_pos,  result in starmap_results:
                 tile_index = list(container.tiles).index((tile_x, tile_y))
-                byte_index = list(container.bytes).index(byte_pos)
-                histogram[tile_index, byte_index] = result
+                model_pos_index = list(container.model_positions).index(model_pos)
+                histogram[tile_index, model_pos_index] = result
 
             self.histogram = histogram
             self.final_results = self.calculate()
 
     @staticmethod
-    def run_workload(self, container, tile_x, tile_y, byte):
-        self.byte_histogram = np.zeros((256, container.sample_length, self.bin_num), dtype=np.uint16)
-        container.configure(tile_x, tile_y, [byte])
+    def run_workload(self, container, tile_x, tile_y, model_pos):
+        self.workload_histogram = np.zeros((256, container.sample_length, self.bin_num), dtype=np.uint16)
+        container.configure(tile_x, tile_y, [model_pos])
         if container.fetch_async:
             asyncio.run(self.batch_loop(container))
         else:
-            for batch in container.get_batches(tile_x, tile_y, byte):
+            for batch in container.get_batches(tile_x, tile_y, model_pos):
                 if self.bins is None:
                     min = np.min(batch[-1])
                     max = np.max(batch[-1])
                     self.bins = np.linspace(min, max, self.bin_num + 1)
                     self.norm = np.float64(float(self.bin_num) / (max - min))
 
-                data = np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
-                self.histogram_along_axis(batch[-1], data, self.bin_num, self.bins[0], self.norm, self.byte_histogram)
+                data = self.model_value.calculate(batch[:-1])
+                self.histogram_along_axis(batch[-1], data, self.bin_num, self.bins[0], self.norm, self.workload_histogram)
 
-        return tile_x, tile_y, byte, self.byte_histogram
+        return tile_x, tile_y, model_pos, self.workload_histogram
 
     async def batch_loop(self, container):
         index = 0
@@ -80,7 +82,7 @@ class MIM(Engine):
         self.norm = np.float64(float(self.bin_num) / (max - min))
 
         while len(batch) > 0:
-            data = np.bitwise_xor(np.squeeze(batch[0]), np.squeeze(batch[1]), dtype=np.uint8)
+            data = self.model_value.calculate(batch[:-1])
             task = asyncio.create_task(self.async_update(batch[-1], data))
             batch = container.get_batch_index(index)
             index += 1
@@ -92,7 +94,7 @@ class MIM(Engine):
                                   data=data, nx=self.bin_num,
                                   xmin=self.bins[0],
                                   normx=self.norm,
-                                  count=self.byte_histogram)
+                                  count=self.workload_histogram)
 
     @staticmethod
     @nb.njit(parallel=True)

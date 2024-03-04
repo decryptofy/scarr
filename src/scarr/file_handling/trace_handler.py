@@ -22,8 +22,8 @@ class TraceHandler:
         self.batch_size = batchSize
         # Current location in the file and save the start index
         self.start = batchStart
-        # Establish what the current byte of plaintext/key/ciphertext to fetch
-        self.byte = None
+        # Establish what the current model positions of plaintext/key/ciphertext to fetch
+        self.model_positions = None
         # How many rows are in the current observed directory of the file
         self.data_length = None
         self.slices = None
@@ -36,9 +36,9 @@ class TraceHandler:
         self.traces_length = len(self.data['0/0/traces'])
 
     # Change the directory to the passed in tile
-    def configure(self, tile_x, tile_y, bytes, slice_index=[], trace_index=[], time_slice=[], stride=1, convergence_step = None):
+    def configure(self, tile_x, tile_y, model_positions, slice_index=[], trace_index=[], time_slice=[], stride=1, convergence_step = None):
         try:
-            self.bytes = bytes
+            self.model_positions = model_positions
             self.current_tile = f'{tile_x}/{tile_y}'
             self.data_length = len(self.data[f'{self.current_tile}{"/traces"}'])
 
@@ -92,7 +92,7 @@ class TraceHandler:
         # Grab zarr array
         col_data = self.data[f'{self.current_tile}/{col_name}']
         # Grab the actual data
-        data = col_data.get_orthogonal_selection((slice, self.bytes))
+        data = col_data.get_orthogonal_selection((slice, self.model_positions))
         # Pass to grab
         return data
     

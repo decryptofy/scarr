@@ -5,18 +5,17 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
 from .engine import Engine
-import numba as nb
+from ..model_values.model_value import ModelValue
 from multiprocessing.pool import Pool
+import numpy as np
+import numba as nb
 import asyncio
 
 
 class MIA(Engine):
 
-    def __init__(self, model, bin_num=9, convergence_step=None) -> None:
-
-        self.model = model
+    def __init__(self, model_value: ModelValue, bin_num=9, convergence_step=None) -> None:
         self.bin_num = bin_num
 
         self.bins = None
@@ -26,6 +25,8 @@ class MIA(Engine):
         self.candidates = None
         self.results = None
 
+        super().__init__(model_value)
+
     def run(self, container):
         final_results = None
         final_candidates = None
@@ -33,36 +34,36 @@ class MIA(Engine):
             workload = []
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
-                for byte in container.bytes:
-                    workload.append((self, container, tile_x, tile_y, byte))
+                for model_pos in container.model_positions:
+                    workload.append((self, container, tile_x, tile_y, model_pos))
 
             starmap_results = pool.starmap(self.run_workload, workload)
             pool.close()
             pool.join()
 
-            for tile_x, tile_y, byte, results, candidates in starmap_results:
+            for tile_x, tile_y, model_pos, results, candidates in starmap_results:
                 if final_results is None:
                     final_results = np.zeros((len(container.tiles),
-                                              len(container.bytes),
+                                              len(container.model_positions),
                                               results.shape[0],
                                               256,
                                               container.sample_length), dtype=np.float64)
                     final_candidates = np.zeros((len(container.tiles),
-                                                 len(container.bytes),
+                                                 len(container.model_positions),
                                                  results.shape[0]), dtype=np.uint8)
 
-                byte_index = list(container.bytes).index(byte)
+                model_pos_index = list(container.model_positions).index(model_pos)
                 tile_index = list(container.tiles).index((tile_x, tile_y))
-                final_results[tile_index, byte_index] = results
-                final_candidates[tile_index, byte_index] = candidates
+                final_results[tile_index, model_pos_index] = results
+                final_candidates[tile_index, model_pos_index] = candidates
 
             self.final_results = final_results
             self.final_candidates = final_candidates
 
     @staticmethod
-    def run_workload(self, container, tile_x, tile_y, byte):
+    def run_workload(self, container, tile_x, tile_y, model_pos):
 
-        num_steps = container.configure(tile_x, tile_y, [byte], self.convergence_step)
+        num_steps = container.configure(tile_x, tile_y, [model_pos], self.convergence_step)
         if self.convergence_step is None:
             self.convergence_step = np.inf
 
@@ -70,15 +71,13 @@ class MIA(Engine):
         self.candidates = np.empty((num_steps), dtype=np.uint8)
 
         if container.fetch_async:
-            asyncio.run(self.async_byte_result(container))
+            asyncio.run(self.async_compute_result(container))
         else:
-            self.byte_result(byte, tile_x, tile_y, container)
+            self.compute_result(model_pos, tile_x, tile_y, container)
 
-        return tile_x, tile_y, byte, self.results, self.candidates
+        return tile_x, tile_y, model_pos, self.results, self.candidates
 
-    def update(self, traces: np.ndarray, plaintext: np.ndarray):
-        model = self.model.calculate_table(np.squeeze(plaintext))
-
+    def update(self, traces: np.ndarray, data: np.ndarray):
         min = self.bins[0]
         max = self.bins[-1]
 
@@ -86,11 +85,9 @@ class MIA(Engine):
 
         normx = np.float64(float(bins) / (max - min))
 
-        self.histogram_along_axis(traces, model.astype(np.uint8), bins, min, normx, self.histogram)
+        self.histogram_along_axis(traces, data.astype(np.uint8), bins, min, normx, self.histogram)
 
-    async def async_update(self, traces: np.ndarray, plaintext: np.ndarray):
-        model = self.model.calculate_table(np.squeeze(plaintext))
-
+    async def async_update(self, traces: np.ndarray, data: np.ndarray):
         min = self.bins[0]
         max = self.bins[-1]
 
@@ -98,7 +95,7 @@ class MIA(Engine):
 
         normx = np.float64(float(bins) / (max - min))
 
-        self.histogram_along_axis(traces, model.astype(np.uint8), bins, min, normx, self.histogram)
+        self.histogram_along_axis(traces, data.astype(np.uint8), bins, min, normx, self.histogram)
 
     def calculate(self):
         trace_hist = self.histogram.sum(axis=0)
@@ -128,13 +125,13 @@ class MIA(Engine):
     def find_candidate(self, result):
         return np.unravel_index(np.abs(result).argmax(), result.shape[0:])[0]
 
-    def byte_result(self, byte, tile_x, tile_y, container):
+    def compute_result(self, tile_x, tile_y, container):
 
-        self.histogram = np.zeros((self.model.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
+        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
 
         traces_processed = 0
         converge_index = 0
-        for batch in container.get_batches(tile_x, tile_y, byte):
+        for batch in container.get_batches(tile_x, tile_y):
             if traces_processed >= self.convergence_step:
                 result = self.calculate().swapaxes(0, 1)
                 self.results[converge_index, :, :] = result
@@ -142,20 +139,20 @@ class MIA(Engine):
                 traces_processed = 0
                 converge_index += 1
 
-            plaintext = batch[0]
-            samples = batch[-1]
+            data = self.model_value.calculate_table(batch[:-1])
+            traces = batch[-1]
 
             if self.bins is None:
                 self.bins = np.linspace(np.min(batch[-1]), np.max(batch[-1]), self.bin_num + 1)
 
-            self.update(samples, plaintext)
+            self.update(traces, data)
 
         result = self.calculate().swapaxes(0, 1)
         self.results[converge_index, :, :] = result
         self.candidates[converge_index] = self.find_candidate(result)
 
-    async def async_byte_result(self, container):
-        self.histogram = np.zeros((self.model.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
+    async def async_compute_result(self, container):
+        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
         index = 0
         batch = container.get_batch_index(index)
         index += 1
@@ -173,7 +170,7 @@ class MIA(Engine):
                 traces_processed = 0
                 converge_index += 1
 
-            task = asyncio.create_task(self.async_update(batch[-1], batch[0]))
+            task = asyncio.create_task(self.async_update(batch[-1], self.model_value.calculate_table(batch[:-1])))
             traces_processed += batch[-1].shape[0]
             batch = container.get_batch_index(index)
             index += 1

@@ -5,7 +5,7 @@ from src.scarr.engines.snr import SNR
 from src.scarr.engines.cpa import CPA
 from src.scarr.engines.mia import MIA
 
-from src.scarr.models.subBytes_weight import SubBytes_weight
+from src.scarr.model_values.sbox_weight import SboxWeight
 
 from devtools.data_creation.correlation_data import CorrelationData
 
@@ -16,9 +16,9 @@ class TestSNR(unittest.TestCase):
 
         cd.generate_data()
 
-        bytes_pos = np.arange(16)
+        model_positions = np.arange(16)
 
-        cd.configure(0,0,bytes_pos)
+        cd.configure(0,0,model_positions)
 
         instance = SNR()
 
@@ -26,15 +26,15 @@ class TestSNR(unittest.TestCase):
 
         results = instance.get_result()
 
-        for byte in range(16):
-            for pos, snr in enumerate(results[0][byte]):
-                if byte in (pos - 4, pos - 24):
+        for model_pos in range(16):
+            for pos, snr in enumerate(results[0][model_pos]):
+                if model_pos in (pos - 4, pos - 24):
                     continue
                 self.assertTrue(snr < 1.2)
 
 
-            self.assertTrue(results[0][byte][byte + 4] > 5000)
-            self.assertTrue(results[0][byte][byte + 24] > 5000)
+            self.assertTrue(results[0][model_pos][model_pos + 4] > 5000)
+            self.assertTrue(results[0][model_pos][model_pos + 24] > 5000)
 
 class TestCPA(unittest.TestCase):
     def test_cpa(self):
@@ -43,13 +43,13 @@ class TestCPA(unittest.TestCase):
 
         cd.generate_data()
 
-        model = SubBytes_weight()
+        model_value = SboxWeight()
 
-        bytes_pos = np.arange(16)
+        model_positions = np.arange(16)
 
-        cd.configure(0,0,bytes_pos)
+        cd.configure(0,0,model_positions)
 
-        instance = CPA(model=model)
+        instance = CPA(model_value=model_value)
 
         instance.run(cd)
 
@@ -68,13 +68,13 @@ class TestMIA(unittest.TestCase):
 
         cd.generate_data()
 
-        model = SubBytes_weight()
+        model_value = SboxWeight()
 
-        bytes_pos = np.arange(16)
+        model_positions = np.arange(16)
 
-        cd.configure(0,0,bytes_pos)
+        cd.configure(0,0,model_positions)
 
-        instance = MIA(model=model, bin_num=9)
+        instance = MIA(model_value=model_value, bin_num=9)
 
         instance.run(cd)
 

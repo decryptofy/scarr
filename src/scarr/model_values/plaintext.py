@@ -6,17 +6,15 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 import numpy as np
+from .model_value import ModelValue
+from .utils import WEIGHTS, KEYS
 
-class Model:
+
+class PlainText(ModelValue):
 
     def __init__(self) -> None:
-        pass
+        self.num_vals = 256
+        self.vals = np.arange(256)
 
-    def calculate(self, plaintext: np.ndarray, key):
-        pass
-
-    def calculate_table(self, plaintext: np.ndarray):
-        pass
-
-    def calculate_profile(self, batch):
-        pass
+    def calculate(self, batch):
+        return np.squeeze(batch[0])

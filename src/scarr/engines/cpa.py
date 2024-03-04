@@ -5,17 +5,17 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
+
 from .engine import Engine
+from ..model_values.model_value import ModelValue
 from multiprocessing.pool import Pool
+import numpy as np
 import asyncio
 
 
 class CPA(Engine):
 
-    def __init__(self, model, convergence_step=None) -> None:
-        self.model = model
-
+    def __init__(self, model_value: ModelValue, convergence_step=None) -> None:
         self.trace_count = 0
         self.model_sum = None
         self.model_sq_sum = None
@@ -29,10 +29,12 @@ class CPA(Engine):
         self.candidate = None
         self.results = None
 
+        super().__init__(model_value)
+
     def run(self, container):
         self.final_results = None
         self.final_candidates = None
-        self.populate(container.sample_length, len(container.bytes))
+        self.populate(container.sample_length, len(container.model_positions))
 
         with Pool() as pool:
             workload = []
@@ -47,12 +49,12 @@ class CPA(Engine):
             for tile_x, tile_y, results, candidates in starmap_results:
                 if self.final_results is None:
                     self.final_results = np.zeros((len(container.tiles),
-                                                   len(container.bytes),
+                                                   len(container.model_positions),
                                                    results.shape[1],
                                                    256,
                                                    container.sample_length), dtype=np.float64)
                     self.final_candidates = np.zeros((len(container.tiles),
-                                                      len(container.bytes),
+                                                      len(container.model_positions),
                                                       results.shape[1]), dtype=np.uint8)
 
                 tile_index = container.tiles.index((tile_x, tile_y))
@@ -61,12 +63,12 @@ class CPA(Engine):
 
     @staticmethod
     def run_workload(self, container, tile_x, tile_y):
-        num_steps = container.configure(tile_x, tile_y, container.bytes, self.convergence_step)
+        num_steps = container.configure(tile_x, tile_y, container.model_positions, self.convergence_step)
         if self.convergence_step is None:
             self.convergence_step = np.inf
 
-        self.results = np.empty((len(container.bytes), num_steps, 256, container.sample_length), dtype=np.float64)
-        self.candidates = np.empty((len(container.bytes), num_steps), dtype=np.uint8)
+        self.results = np.empty((len(container.model_positions), num_steps, 256, container.sample_length), dtype=np.float64)
+        self.candidates = np.empty((len(container.model_positions), num_steps), dtype=np.uint8)
 
         if container.fetch_async:
             asyncio.run(self.batch_loop(container))
@@ -84,10 +86,10 @@ class CPA(Engine):
                     converge_index += 1
 
                 # Generate modeled power values for plaintext values
-                model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[0])
+                data = self.model_value.calculate_all_tables(batch[:-1])
                 traces = batch[-1].astype(np.float32)
 
-                self.update(traces, model)
+                self.update(traces, data)
                 traces_processed += traces.shape[0]
 
             result = self.calculate()
@@ -113,10 +115,10 @@ class CPA(Engine):
                 converge_index += 1
 
             # Generate modeled power values for plaintext values
-            model = np.apply_along_axis(self.model.calculate_table, axis=1, arr=batch[0])
+            data = self.model_value.calculate_all_tables(batch[:-1])
             traces = batch[-1].astype(np.float32)
 
-            task = asyncio.create_task(self.async_update(traces, model))
+            task = asyncio.create_task(self.async_update(traces, data))
             traces_processed += traces.shape[0]
 
             batch = container.get_batch_index(index)
@@ -169,17 +171,17 @@ class CPA(Engine):
     def get_candidate(self):
         return self.final_candidates
 
-    def populate(self, sample_length, num_bytes):
+    def populate(self, sample_length, num_positions):
         # Sum of the model so far
-        self.model_sum = np.zeros((256, num_bytes), dtype=np.float32)
+        self.model_sum = np.zeros((256, num_positions), dtype=np.float32)
         # Sum of the model squared so far
-        self.model_sq_sum = np.zeros((256, num_bytes), dtype=np.float32)
+        self.model_sq_sum = np.zeros((256, num_positions), dtype=np.float32)
         # Sum of the samples observed
         self.sample_sum = np.zeros((sample_length), dtype=np.float32)
         # Sum of the samples observed squared
         self.sample_sq_sum = np.zeros((sample_length), dtype=np.float32)
         # Sum of the product of the samples and the models
-        self.prod_sum = np.zeros((256 * num_bytes, sample_length), dtype=np.float32)
+        self.prod_sum = np.zeros((256 * num_positions, sample_length), dtype=np.float32)
 
     def update(self, traces: np.ndarray, data: np.ndarray):
         # Update the number of rows processed

@@ -5,10 +5,10 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import numpy as np
 from .engine import Engine
-import numba as nb
 from multiprocessing.pool import Pool
+import numba as nb
+import numpy as np
 import asyncio
 np.seterr(divide='ignore', invalid='ignore')
 
