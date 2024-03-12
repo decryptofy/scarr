@@ -2,3 +2,4 @@ numpy
 numba
 zarr
 ruff
+mpmath
