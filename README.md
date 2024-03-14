@@ -65,13 +65,13 @@ SCARR only works with its native format and we have no plans to support other fi
 
 SCARR is developed with High-Performance Computing (HPC) considerations in mind. Optimum performance can rely on many aspects of its configuration and the underlying platform. The default batch size (the number of traces processed in parallel at a given point in time) is 5000. Depending on the platform and chosen analysis, other values between 1000 and 10000 may give better results. Please also take into account the following:
 
-* We recommend CPUs with 8 or more physical cores, preferably with AVX512
+* We recommend CPUs with 8 or more physical (performance) cores, preferably with AVX512
 * SCARR is optimized for CPUs with SMT (Hyper-Threading); otherwise, mp.pool parameters are not optimal
 * A combination of performance and efficiency cores is not specifically considered in mp.pool either
-* Fast, low-latency memory should be used (e.g., DDR5-6400)
+* Fast, low-latency memory should be used (e.g., DDR5-6400 and CL < 32)
 * SCARR should *not* be used on NUMA platforms as this degrades performance in unexpected ways
 * SCARR is designed to run on Linux/Unix; Windows may work but is *not* supported
-* ulimits need to be adjusted when processing many tiles/byte-positions at the same time
+* *ulimits need to be adjusted when processing many tiles/byte-positions at the same time*
 
 # Contributing (inbound=outbound)
 
