@@ -12,7 +12,7 @@ SCARR is designed to support the following:
 * Processed data can be int or float (raw oscilloscope data or digitally pre-processed)
 * Multiple tiles from EM-measurements are stored in the same data set to identify Regions-of-Interest (ROIs)
 * Advanced indexing for fast Trace-of-Interest (TOI) and Point-of-Interest (POI) selections
-* Analysis algorithms currently include: SNR, TVLA, CPA, MIA (more to come)
+* Analysis algorithms currently include: SNR, TVLA, CPA, MIA (more to come, [check here](https://github.com/decryptofy/scarr/tree/main/src/scarr/engines))
 
 SCARR also aims at maximizing I/O efficiency, including the asynchronous prefetch of (compressed) data sets.
 
@@ -59,7 +59,7 @@ We are actively supporting the "Zarr-Python Benchmarking & Performance" group to
 
 # Working with Other File Formats
 
-SCARR only works with its native format and we have no plans to support other file formats. Should you have previously recorded data in other file formats, then you need to convert these data sets to Zarr. We collect example scripts for this format conversion [here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl), e.g., to convert separate .npy files to a combined .zarr. These scripts are not actively maintained.
+SCARR only works with its native format and we have no plans to support other file formats. Should you have previously recorded data in other file formats, then you need to convert these data sets to Zarr. We collect example scripts for this format conversion [here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl), e.g., to convert separate .npy files to a combined .zarr. These scripts are not actively maintained and not optimized.
 
 # Platform Compatibility
 
@@ -68,8 +68,9 @@ SCARR is developed with High-Performance Computing (HPC) considerations in mind.
 * We recommend CPUs with 8 or more physical cores, preferably with AVX512
 * SCARR is optimized for CPUs with SMT (Hyper-Threading); otherwise, mp.pool parameters are not optimal
 * A combination of performance and efficiency cores is not specifically considered in mp.pool either
+* Fast, low-latency memory should be used (e.g., DDR5-6400)
 * SCARR should *not* be used on NUMA platforms as this degrades performance in unexpected ways
-* SCARR is only designed to run on Linux/Unix as it relies on fork; Windows is *not* supported
+* SCARR is designed to run on Linux/Unix; Windows may work but is *not* supported
 * ulimits need to be adjusted when processing many tiles/byte-positions at the same time
 
 # Contributing (inbound=outbound)
@@ -89,7 +90,7 @@ This Source Code Form is "Incompatible With Secondary Licenses", as defined by t
 
 SCARR was initiated and designed by Vincent Immler out of a necessity to support his teaching and research at Oregon State University. Under his guidance, two undergraduate students at Oregon State University, Jonah Bosland and Stefan Ene, developed the majority of the initial implementation during the summer 2023. Peter Baumgartner helped us with the testing and analysis on NUMA platforms.
 
-Additional contributions by (new authors, add yourself here):
+Additional contributions by (new contributors, add yourself here):
 * Matt Ruff
 * Kevin Yuan
 * to be added
@@ -101,10 +102,10 @@ Copyright for SCARR (2023-2024) by Vincent Immler.
 # Citation
 
 If you use SCARR in your research, please cite our paper:
-"High-Performance Design Patterns and File Formats for Side-Channel Analysis" by Jonah Bosland, Stefan Ene, Peter Baumgartner, Vincent Immler
-to appear at CHES 2024
+"High-Performance Design Patterns and File Formats for Side-Channel Analysis" by Jonah Bosland, Stefan Ene, Peter Baumgartner, Vincent Immler.
+IACR Transactions on Cryptographic Hardware and Embedded Systems, 2024(2), 769–794.
 
-DOI: to be added
+DOI: [click here](https://doi.org/10.46586/tches.v2024.i2.769-794)
 
 # Acknowledgements
 
