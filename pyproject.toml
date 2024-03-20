@@ -14,11 +14,11 @@ description = "A high-performance SCA library for datasets that include NxM EM t
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-	'numpy',
+	'numpy<2',
 	'numba',
 	'zarr[jupyter]',
 	'ruff',
-    'mpmath',
+  'mpmath',
 ]
 license = {text = "MPL-2.0"}
 classifiers = [

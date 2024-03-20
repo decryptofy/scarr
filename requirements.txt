@@ -1,5 +1,5 @@
-numpy
+numpy<2
 numba
-zarr
+zarr[jupyter]
 ruff
 mpmath
