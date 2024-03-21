@@ -3,3 +3,4 @@ numba
 zarr[jupyter]
 ruff
 mpmath
+matplotlib
