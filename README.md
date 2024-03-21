@@ -30,6 +30,8 @@ pip3 install "git+https://github.com/decryptofy/scarr.git"
 python3 -m pip install .
 ```
 
+Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10.
+
 # Usage Warning
 
 Some computations in SCARR can push your hardware to its limits and beyond. Caution is advised when running sustained compute loads as many consumer-grade hardware is not made for this. Especially for laptops, please take into account the best practices under [USAGE.md](https://github.com/decryptofy/scarr/blob/main/USAGE.md). Additionally, SCARR does not do any memory-checking. When attempting computations that exceed the available memory, then based on OS-level settings, SCARR or other applications may be terminated by the OS, resulting in potential data loss. During heavy computations, it is time for coffee, as you cannot use your computer for anything else but SCARR. See also: [DISCLAIMER.md](https://github.com/decryptofy/scarr/blob/main/DISCLAIMER.md)
