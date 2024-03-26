@@ -81,7 +81,7 @@ We want to keep this a no-nonsense project and promote contributions, while mini
 
 Consistent with Section D.6. of the [GitHub Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) as of November 16, 2020, and the [Mozilla Public License, v. 2.0.](https://www.mozilla.org/en-US/MPL/2.0/), the project maintainer for this project accepts contributions using the inbound=outbound model. When you submit a pull request to this repository (inbound), you are agreeing to license your contribution under the same terms as specified under [License](https://github.com/decryptofy/scarr/blob/main/README.md#license) (outbound).
 
-Note: this is modeled after the terms for contributing to [Ghidra](https://github.com/NationalSecurityAgency/ghidra/blob/master/CONTRIBUTING.md).
+Note: this is modeled after the terms for contributing to [Ghidra](https://github.com/NationalSecurityAgency/ghidra/blob/master/CONTRIBUTING.md). Our reasoning for this licensing is explained [here](https://github.com/decryptofy/scarr/blob/main/CONTRIBUTING.md#licensing-explained).
 
 # License
 
