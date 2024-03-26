@@ -25,7 +25,7 @@ This is an open source project. Contributions you make to this repository are co
 
 # Licensing Explained
 
-In the following, we would like to briefly explain SCARR's license as this might be an important aspect for future contributors. Since SCARR is licensed under the MPL-2.0-no-copyleft-exception, SCARR's code itself must be open-source. However, there are nuanced differences compared to GPL that we consider important.
+In the following, we would like to briefly explain SCARR's license as this might be an important aspect for future contributors. Since SCARR is licensed under the MPL-2.0-no-copyleft-exception (see FAQ [here](https://www.mozilla.org/en-US/MPL/2.0/FAQ/)), SCARR's code itself must be open-source. However, there are nuanced differences compared to GPL that we consider important.
 
 Permissible:
 * Larger works can include SCARR *without* revealing code outside of SCARR (unlike GPL)
@@ -33,8 +33,8 @@ Permissible:
 
 Prohibited:
 * Cannot include GPL code into SCARR, to make sure the above remains a free choice
-* Adopting from SCARR and only acknowledging its use to prevent undue commercialization
+* Cannot adopt from SCARR only by acknowledging its use (to prevent undue commercialization)
 
-When working in the hardware security domain, projects can be of sensitive or classified nature. For us, it is perfectly fine for such scenarios to extend SCARR on a per-file basis and keep these additional files under proprietary/classified license, even when distributing SCARR and these extensions to other entities (e.g., from one government to another). We consider this a greater freedom compared to imposing GPL rules onto everyone using/extending this project.
+When working in the hardware security domain, projects can be of sensitive or classified nature. For us, it is perfectly fine for such scenarios to extend SCARR on a per-file basis and keep these additional files under proprietary/classified license, even when distributing SCARR and these extensions to other entities (e.g., from one organization or government entity to another). We consider this a greater freedom compared to imposing GPL rules onto everyone using/extending this project.
 
-Note: the overwhelming majority of Python projects is licensed under MIT, BSD, or Apache 2.0 license that can be combined with SCARR.
+Note: the overwhelming majority of Python projects is licensed under MIT, BSD, or Apache 2.0 license that can be combined with SCARR. We are simply being explicit about not including GPL into SCARR, thereby simplifying the inbound=outbound model.
