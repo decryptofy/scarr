@@ -30,6 +30,19 @@ TBD
 
 TBD
 
+```
+├── devtools
+├── src
+│   └── scarr
+│       ├── container
+│       ├── engines
+│       ├── file_handling
+│       ├── filters
+│       ├── preprocessing
+│       └── model_values
+├── tests
+```
+
 ## Cross-Cutting Concerns
 
 TBD
