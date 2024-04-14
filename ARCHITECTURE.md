@@ -51,11 +51,11 @@ This section describes the main code structure of SCARR and its most important d
 
 ### `container`
 
-This directory contains the Container class which is the main driver of Scarr. This class is passed in the file handler, engine, pre and postprocessing, and any other configuration options that you wish to use (i.e. tiles and model values you wish to analyze). One role of this class is to handle user interaction with scarr. A typical user will configure all necessary objects, pass them into a container, tell a container to run its computations, and then pull the subsequent results from the container. A more interior role of the container is to handle the interactions between the pre-processes, filters, file handler, and engine objects. 
+This directory contains the Container class which is the main driver of SCARR. This class is passed in the file handler, engine, pre and postprocessing, and any other configuration options that you wish to use (i.e. tiles and model values you wish to analyze). One role of this class is to handle user interaction with SCARR. A typical user will configure all necessary objects, pass them into a container, tell a container to run its computations, and then pull the subsequent results from the container. A more interior role of the container is to handle the interactions between the pre-processes, filters, file handler, and engine objects. 
 
 ### `file_handling`
 
-This directory contains the TraceHandler class which is the file handler of Scarr. This class' main responsibilities are to compute information (i.e. indices/ranges for each batch) required for batching and pass back batches of data that the container class requests.
+This directory contains the TraceHandler class which is the file handler of SCARR. This class' main responsibilities are to compute information (i.e. indices/ranges for each batch) required for batching and pass back batches of data that the container class requests.
 
 ### `filters`
 
@@ -63,19 +63,19 @@ This directory contains all classes that can be used to filter data during run t
 
 ### `preprocessing`
 
-Currently Scarr does not have any preprocessing enabled. However, we are working on this! Soon we hope to have preprocessing algorithms such as principle component analysis to further enable advanced analysis. These classes will be applied at the begginning of a container run call and will be similar in functionality to the filter classes.
+Currently SCARR does not have any preprocessing enabled. However, we are working on this! Soon we hope to have preprocessing algorithms such as principle component analysis to further enable advanced analysis. These classes will be applied at the begginning of a container run call and will be similar in functionality to the filter classes.
 
 ### `engines`
 
-This directory contains all available engines that scarr currently supports. Engines are the main compute class of Scarr. Their main role is to contain the batch-wise algorthims that Scarr uses to compute results. Currently Scarr supports two kinds of Engines, leakage detection (i.e. SNR) and key extraction (i.e. CPA). The first is used as a metric to determine if an implementation is attackable. While the second is an attack to draw cryptographic keys out of said implementation. Any Engine reliant on metadata (i.e. ciphertext, keys, plaintext) for its computation requires the use of a member of the model_values class which passes back values based on said metadata and most times a model of some kind (i.e. Hamming Weight). 
+This directory contains all available engines that SCARR currently supports. Engines are the main compute class of SCARR. Their main role is to contain the batch-wise algorthims that SCARR uses to compute results. Currently SCARR supports two kinds of Engines, leakage detection (i.e. SNR) and key extraction (i.e. CPA). The first is used as a metric to determine if an implementation is attackable. While the second is an attack to draw cryptographic keys out of said implementation. Any Engine reliant on metadata (i.e. ciphertext, keys, plaintext) for its computation requires the use of a member of the model_values class which passes back values based on said metadata and most times a model of some kind (i.e. Hamming Weight). 
 
 ### `model_values`
 
-This directory contains all available metadata based models that Scarr currently supports. These models all currently attack input into the AES-128 S-Box. However, we are actively working on adding more available models. The model_values class is also split into two categories. There are model_values that are purely based on metadata (i.e. plaintext) and model_values that rely on a given key or key-hypothesis (i.e. sbox_weight). Metric Engines are usable with any of the model_values while key-extraction engines are only compatible with model_values that inherit from the GuessModelValue base type.
+This directory contains all available metadata based models that SCARR currently supports. These models all currently attack input into the AES-128 S-Box. However, we are actively working on adding more available models. The model_values class is also split into two categories. There are model_values that are purely based on metadata (i.e. plaintext) and model_values that rely on a given key or key-hypothesis (i.e. sbox_weight). Metric Engines are usable with any of the model_values while key-extraction engines are only compatible with model_values that inherit from the GuessModelValue base type.
 
 ### `postprocessing`
 
-Currently Scarr does not have any postprocessing enabled. However, we are working on this! Currently all key extraction engines have a get_candidate method that will return the key hypothesis for every computed model_position. 
+Currently SCARR does not have any postprocessing enabled. However, we are working on this! Currently all key extraction engines have a get_candidate method that will return the key hypothesis for every computed model_position. 
 
 ## Design Principles
 
@@ -99,10 +99,38 @@ Currently Scarr does not have any postprocessing enabled. However, we are workin
 
 ## Cross-Cutting Concerns
 
-TBD
+This section seeks to cover generic information about SCARR and its design.
+
+### File Format
+
+Currently SCARR only supports one file format that is based on the zarr open source library. The format is as follows:
+
+directory.zarr
+├── /X
+├── /X
+│   └── /Y
+│       ├── /ciphertext
+│       ├── /key
+│       ├── /plaintext
+│       ├── /traces
+├── /X
+```
+
+Traces can be left uncompressed or compressed. A chunking of (5000,1000) is recommended. All metadata is left uncompressed and chunked as (5000,16) for AES128. X and Y are the logical coordinates of EM side-channel measurements. Power measurements use the same structure only with /0/0/ as coordinates for /X/Y/.
+
+To see a current example of the file format please go to our example files stored on box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
+
+We are actively supporting the "Zarr-Python Benchmarking & Performance" group to further speed-up Zarr.
 
 ### Testing
 
-TBD
+Currently SCARR has a small selection of 'unit tests' but we are expecting to replace this with a more in depth results verification framework in the future. Currently most of our results verification is done by cross-checking with current open-source frameworks and published works.
 
 ### Documentation
+
+SCARR has multiple important documents that you should read through before use:
+
+* ARCHITECTURE.md - High level description of the framework and its functionality.
+* CONTRIBUTING.md - Guide to follow for those who would like to provide their own contributions to the produect.
+* DISCLAIMER.md - Generic use disclaimer.
+* README.md - High level overview of how to begin using SCARR along with generic information about the library. 
