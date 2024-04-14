@@ -51,31 +51,31 @@ This section describes the main code structure of SCARR and its most important d
 
 ### `container`
 
-TBD
+This directory contains the Container class which is the main driver of Scarr. This class is passed in the file handler, engine, pre and postprocessing, and any other configuration options that you wish to use (i.e. tiles and model values you wish to analyze). One role of this class is to handle user interaction with scarr. A typical user will configure all necessary objects, pass them into a container, tell a container to run its computations, and then pull the subsequent results from the container. A more interior role of the container is to handle the interactions between the pre-processes, filters, file handler, and engine objects. 
 
 ### `file_handling`
 
-TBD
+This directory contains the TraceHandler class which is the file handler of Scarr. This class' main responsibilities are to compute information (i.e. indices/ranges for each batch) required for batching and pass back batches of data that the container class requests.
 
 ### `filters`
 
-TBD
+This directory contains all classes that can be used to filter data during run time. The role of these classes are to shape trace data in a way to aid computations. This may take the form of data shifting (sum of absolute differences) or directly modifying the trace values (normalization). These objects are meant to be able to be chained together to enable enhanced analysis. Filters are applied to traces on a per-batch basis inside of the container before the batch is passed back to the engine.
 
 ### `preprocessing`
 
-TBD
+Currently Scarr does not have any preprocessing enabled. However, we are working on this! Soon we hope to have preprocessing algorithms such as principle component analysis to further enable advanced analysis. These classes will be applied at the begginning of a container run call and will be similar in functionality to the filter classes.
 
 ### `engines`
 
-TBD
+This directory contains all available engines that scarr currently supports. Engines are the main compute class of Scarr. Their main role is to contain the batch-wise algorthims that Scarr uses to compute results. Currently Scarr supports two kinds of Engines, leakage detection (i.e. SNR) and key extraction (i.e. CPA). The first is used as a metric to determine if an implementation is attackable. While the second is an attack to draw cryptographic keys out of said implementation. Any Engine reliant on metadata (i.e. ciphertext, keys, plaintext) for its computation requires the use of a member of the model_values class which passes back values based on said metadata and most times a model of some kind (i.e. Hamming Weight). 
 
 ### `model_values`
 
-TBD
+This directory contains all available metadata based models that Scarr currently supports. These models all currently attack input into the AES-128 S-Box. However, we are actively working on adding more available models. The model_values class is also split into two categories. There are model_values that are purely based on metadata (i.e. plaintext) and model_values that rely on a given key or key-hypothesis (i.e. sbox_weight). Metric Engines are usable with any of the model_values while key-extraction engines are only compatible with model_values that inherit from the GuessModelValue base type.
 
 ### `postprocessing`
 
-TBD
+Currently Scarr does not have any postprocessing enabled. However, we are working on this! Currently all key extraction engines have a get_candidate method that will return the key hypothesis for every computed model_position. 
 
 ## Design Principles
 
