@@ -105,6 +105,7 @@ This section seeks to cover generic information about SCARR and its design.
 
 Currently SCARR only supports one file format that is based on the zarr open source library. The format is as follows:
 
+```
 directory.zarr
 ├── /X
 ├── /X
