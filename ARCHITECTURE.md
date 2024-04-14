@@ -71,7 +71,7 @@ This directory contains all available engines that SCARR currently supports. Eng
 
 ### `model_values`
 
-This directory contains all available metadata based models that SCARR currently supports. These models all currently attack input into the AES-128 S-Box. However, we are actively working on adding more available models. The model_values class is also split into two categories. There are model_values that are purely based on metadata (i.e. plaintext) and model_values that rely on a given key or key-hypothesis (i.e. sbox_weight). Metric Engines are usable with any of the model_values while key-extraction engines are only compatible with model_values that inherit from the GuessModelValue base type.
+This directory contains all available metadata based models that SCARR currently supports. These models all currently attack input into the AES128 S-Box. However, we are actively working on adding more available models. The model_values class is also split into two categories. There are model_values that are purely based on metadata (i.e. plaintext) and model_values that rely on a given key or key-hypothesis (i.e. sbox_weight). Metric Engines are usable with any of the model_values while key-extraction engines are only compatible with model_values that inherit from the GuessModelValue base type.
 
 ### `postprocessing`
 
