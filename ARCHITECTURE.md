@@ -125,7 +125,7 @@ We are actively supporting the "Zarr-Python Benchmarking & Performance" group to
 
 ### Testing
 
-Currently SCARR has a small selection of 'unit tests' but we are expecting to replace this with a more in depth results verification framework in the future. Currently most of our results verification is done by cross-checking with current open-source frameworks and published works.
+Currently SCARR has a small selection of 'unit tests' but we are expecting to replace this with a more in depth results verification framework in the future.
 
 ### Documentation
 
