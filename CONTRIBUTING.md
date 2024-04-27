@@ -2,22 +2,28 @@
 
 If you are interested in making SCARR better, there are many ways you can contribute. For example, you can:
 
-* Submit a bug report
-* Suggest a new feature
-* Provide feedback by commenting on feature requests/proposals
-* Propose a patch by submitting a pull request
-* Suggest or submit documentation improvements
-* Answer questions from other users
-* Share the software with other users who are interested
-* Teach others to use the software
+* Submit Bug Report: If you experience any issues or unexpected phenomena while using SCARR, please complete a bug report on GitHub. More detail will help us solve any issues in a prompt manner.
+* Suggest Features: Have an idea for a new feature or enhancement? Please share it with us by opening a GitHub feature request. 
+* Provide Feedback: Engage with our community by actively commenting in ongoing discussions, feature requests, or proposals.
+* Patch Proposals: We welcome any suggested improvements or feature ideas made via pull requests to the repository. Adherence to our coding standards and providing detail will help us promptly incorporate your contributions.
+* Documentation: Help us improve SCARR's documentation by proposing edits, clarification, additions. Your assistance will help improve the usability of the project.
+* Support Other Users: Share your expertise by answering questions from other users on our GitHub discussion. Your assistance contributes to a healthy and collaborative community.
+* Spread the Word: Help promote SCARR by sharing it with others who may find it useful. Word-of-mouth reccomendations are a great way to increase adoption of SCARR.
+* Education: Teach others how to use SCARR effectively; your efforts to contribute to the growth of the user community are essential.
 
 # Contributing Process
-
-TBD :-) This project is at its start, we have not figured this part out yet.
 
 * Patches should be submitted in the form of Pull Requests to the SCARR repository on GitHub.
 * For bugs and feature Requests, please open an [issue](https://github.com/decryptofy/scarr/issues).
 * Within the Python context, we do *not* consider GPL to be an appropriate license, run [liccheck](https://pypi.org/project/liccheck/) to make sure not to accidentally import GPL code.
+
+Steps to Successful Developer Contribution
+1.	Identify an opportunity on our GitHub repository, such as a bug fix, outstanding new feature, or documentation.
+2.	Fork the SCARR repository on your GitHub account and create a feature branch that describes the nature of your contribution.
+3.	Make your changes to the feature branch, committing them frequently, then push and merge to your forked repository’s main branch.
+4.	Submit a pull request to the main branch of SCARR, being as detailed as possible in your description to ensure it is integrated in a timely manner.
+5.	Your request will undergo a review by code owners, please address any necessary feedback, after which you will receive approval and can merge your pull request.
+6.	Repeat this process, stay involved, and celebrate your successful contributions to SCARR!
 
 # Legal
 
