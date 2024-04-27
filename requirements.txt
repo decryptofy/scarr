@@ -4,3 +4,4 @@ zarr[jupyter]
 ruff
 mpmath
 matplotlib
+scipy
