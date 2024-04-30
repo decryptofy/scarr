@@ -4,6 +4,22 @@ SCARR is a Side-Channel Analysis (SCA) framework written in Python that is optim
 
 SCARR is mainly intended for educational and research purposes. If as an individual you find SCARR useful, please contribute, give us a shout-out, or consider buying us coffee (this project currently runs on coffee only). If you are an organization and you benefit from this development, please consider making an unrestricted gift to the Hardware Security Research Lab at Oregon State University (led by Vincent Immler) to promote SCARR's continued development.
 
+# Table of Contents
+
+* [SCARR Features](#scarr-features)
+* [Install](#install)
+* [Usage Warning](#usage-warning)
+* [Getting Started with SCARR](#getting-started-with-scarr)
+* [SCARR's File Format for Side-Channel Analysis Data](#scarrs-file-format-for-side-channel-analysis-data)
+* [Working with Other File Formats](#working-with-other-file-formats)
+* [Platform Compatibility](#platform-compatibility)
+* [Contributing (inbound=outbound)](#contributing-inbound=outbound)
+* [License](#license)
+* [Authors](#authors)
+* [Copyright](#copyright)
+* [Citation](#citation)
+* [Acknowledgements](#acknowledgements)
+
 # SCARR Features
 
 SCARR is designed to support the following:
