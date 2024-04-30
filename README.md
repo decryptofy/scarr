@@ -113,7 +113,7 @@ SCARR was initiated and designed by Vincent Immler out of a necessity to support
 Additional contributions by (new contributors, add yourself here):
 * Matt Ruff
 * Kevin Yuan
-* to be added
+* Alexander Merino
 
 # Copyright
 
