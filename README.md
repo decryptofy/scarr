@@ -40,7 +40,7 @@ SCARR can be installed with pip3 from GitHub directly:
 pip3 install "git+https://github.com/decryptofy/scarr.git"
 ```
 
-*Alternatively*, you can clone the repository to also get the most recent versions of the [Jupyter](https://jupyter.org/) notebooks:
+*Alternatively*, you can clone the repository to also get the most recent versions of the [SCARR Jupyter notebooks](https://github.com/decryptofy/scarr-jupyter):
 
 ```
 git clone git@github.com:decryptofy/scarr.git
@@ -54,7 +54,7 @@ Afterwards, you can install SCARR by typing:
 python3 -m pip install .
 ```
 
-Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10. To make use of the provided Jupyter notebooks, you may want to use [VS Code](https://code.visualstudio.com/) and its [Jupyter plugin](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter), or [PyCharm](https://www.jetbrains.com/pycharm/), but any other options to run Jupyter notebooks should work, too.
+Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10. To make use of [Jupyter notebooks](https://jupyter.org/), you may want to use [VS Code](https://code.visualstudio.com/) and its [Jupyter plugin](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter), or [PyCharm](https://www.jetbrains.com/pycharm/), but any other options to run Jupyter notebooks should work, too.
 
 # Usage Warning
 
