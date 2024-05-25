@@ -13,7 +13,7 @@ SCARR is mainly intended for educational and research purposes. If as an individ
 * [SCARR's File Format for Side-Channel Analysis Data](#scarrs-file-format-for-side-channel-analysis-data)
 * [Working with Other File Formats](#working-with-other-file-formats)
 * [Platform Compatibility](#platform-compatibility)
-* [Contributing (inbound=outbound)](#contributing-inbound=outbound)
+* [Contributing (inbound=outbound)](#contributing-inboundoutbound)
 * [License](#license)
 * [Authors](#authors)
 * [Copyright](#copyright)
