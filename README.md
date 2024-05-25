@@ -64,11 +64,11 @@ Some computations in SCARR can push your hardware to its limits and beyond. Caut
 
 After installing SCARR and consideration of the usage warning, please proceed as follows:
 
-* select and download Jupyter notebook from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
-* choose corresponding example data set(s) and download from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
+* select a Jupyter notebook from the `jupyter` subdirectory or its [corresponding repository](https://github.com/decryptofy/scarr-jupyter).
+* determine corresponding example data set(s) and download from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
 * run Jupyter notebook to use SCARR
 
-***Important note for downloading from Box.com:*** we are currently in the process of finding optimized ways for making the download process more convenient and more reliable. Until then, please avoid downloading whole directories that also have trace files in them, as Box.com will attempt to create a .zip prior to the download (causing a time out while doing so). Select and download data sets only individually. The Jupyter notebooks will soon be included as a submodule.
+***Important note for downloading from Box.com:*** we are currently in the process of finding optimized ways for making the download process more convenient and more reliable. Until then, please avoid downloading whole directories that also have trace files in them, as Box.com will attempt to create a .zip prior to the download (causing a timeout while doing so). Select and download data sets only individually.
 
 # SCARR's File Format for Side-Channel Analysis Data
 
