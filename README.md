@@ -46,7 +46,6 @@ pip3 install "git+https://github.com/decryptofy/scarr.git"
 git clone git@github.com:decryptofy/scarr.git
 cd scarr
 git submodule update --init jupyter
-python3 -m pip install .
 ```
 
 Afterwards, you can install SCARR by typing:
