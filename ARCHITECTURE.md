@@ -29,7 +29,7 @@ Additionally, we want to support chaining of filters and preprocessing modules, 
    * Key rank estimator
    * ...
  
-Since data fetching is expensive, the focus is on one-pass out-of-core processing (processed data can be larger than memory). To perform any analysis, a 'Container' must be configured which is then executed by its run() method.
+Since data fetching is expensive, the focus is on one-pass out-of-core processing (processed data can be larger than memory). To perform any analysis, a 'Container' must be configured and then executed by its run() method.
 
 ## Code Map
 
@@ -55,7 +55,7 @@ This directory contains the Container class which is the main driver of SCARR. T
 
 ### `file_handling`
 
-This directory contains the TraceHandler class which is the file handler of SCARR. This class' main responsibilities are to compute information (i.e. indices/ranges for each batch) required for batching and pass back batches of data that the container class requests.
+This directory contains the TraceHandler class which is the file handler of SCARR. This class's main responsibilities are to compute information (i.e. indices/ranges for each batch) required for batching and pass back batches of data that the container class requests.
 
 ### `filters`
 
@@ -67,7 +67,7 @@ Currently SCARR does not have any preprocessing enabled. However, we are working
 
 ### `engines`
 
-This directory contains all available engines that SCARR currently supports. Engines are the main compute class of SCARR. Their main role is to contain the batch-wise algorthims that SCARR uses to compute results. Currently SCARR supports two kinds of Engines, leakage detection (i.e. SNR) and key extraction (i.e. CPA). The first is used as a metric to determine if an implementation is attackable. While the second is an attack to draw cryptographic keys out of said implementation. Any Engine reliant on metadata (i.e. ciphertext, keys, plaintext) for its computation requires the use of a member of the model_values class which passes back values based on said metadata and most times a model of some kind (i.e. Hamming Weight). 
+This directory contains all available engines that SCARR currently supports. Engines are the main compute class of SCARR. Their main role is to contain the batch-wise algorthims that SCARR uses to compute results. Currently SCARR supports two kinds of Engines, leakage detection (i.e. SNR) and key extraction (i.e. CPA). The first is used as a metric to determine if an implementation is attackable, while the second is an attack to draw cryptographic keys out of said implementation. Any Engine reliant on metadata (i.e. ciphertext, keys, plaintext) for its computation requires the use of a member of the model_values class, which passes back values based on said metadata and, most times, a model of some kind (i.e. Hamming Weight). 
 
 ### `model_values`
 
@@ -132,6 +132,6 @@ Currently SCARR has a small selection of 'unit tests' but we are expecting to re
 SCARR has multiple important documents that you should read through before use:
 
 * ARCHITECTURE.md - High level description of the framework and its functionality.
-* CONTRIBUTING.md - Guide to follow for those who would like to provide their own contributions to the produect.
+* CONTRIBUTING.md - Guide to follow for those who would like to provide their own contributions to the product.
 * DISCLAIMER.md - Generic use disclaimer.
 * README.md - High level overview of how to begin using SCARR along with generic information about the library. 
