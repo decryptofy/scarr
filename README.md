@@ -4,6 +4,22 @@ SCARR is a Side-Channel Analysis (SCA) framework written in Python that is optim
 
 SCARR is mainly intended for educational and research purposes. If as an individual you find SCARR useful, please contribute, give us a shout-out, or consider buying us coffee (this project currently runs on coffee only). If you are an organization and you benefit from this development, please consider making an unrestricted gift to the Hardware Security Research Lab at Oregon State University (led by Vincent Immler) to promote SCARR's continued development.
 
+# Table of Contents
+
+* [SCARR Features](#scarr-features)
+* [Install](#install)
+* [Usage Warning](#usage-warning)
+* [Getting Started with SCARR](#getting-started-with-scarr)
+* [SCARR's File Format for Side-Channel Analysis Data](#scarrs-file-format-for-side-channel-analysis-data)
+* [Working with Other File Formats](#working-with-other-file-formats)
+* [Platform Compatibility](#platform-compatibility)
+* [Contributing (inbound=outbound)](#contributing-inboundoutbound)
+* [License](#license)
+* [Authors](#authors)
+* [Copyright](#copyright)
+* [Citation](#citation)
+* [Acknowledgements](#acknowledgements)
+
 # SCARR Features
 
 SCARR is designed to support the following:
@@ -18,19 +34,27 @@ SCARR also aims at maximizing I/O efficiency, including the asynchronous prefetc
 
 # Install
 
-SCARR should be installed with pip3 from GitHub directly:
+SCARR can be installed with pip3 from GitHub directly:
 
 ```
 pip3 install "git+https://github.com/decryptofy/scarr.git"
 ```
 
-*Alternatively*, you can clone the repository and install from your local copy using:
+*Alternatively*, you can clone the repository to also get the most recent versions of the [SCARR Jupyter notebooks](https://github.com/decryptofy/scarr-jupyter):
+
+```
+git clone git@github.com:decryptofy/scarr.git
+cd scarr
+git submodule update --init jupyter
+```
+
+Afterwards, you can install SCARR by typing:
 
 ```
 python3 -m pip install .
 ```
 
-Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10.
+Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10. To make use of [Jupyter notebooks](https://jupyter.org/), you may want to use [VS Code](https://code.visualstudio.com/) and its [Jupyter plugin](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter), or [PyCharm](https://www.jetbrains.com/pycharm/), but any other options to run Jupyter notebooks should work, too.
 
 # Usage Warning
 
@@ -40,11 +64,11 @@ Some computations in SCARR can push your hardware to its limits and beyond. Caut
 
 After installing SCARR and consideration of the usage warning, please proceed as follows:
 
-* select and download Jupyter notebook from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
-* choose corresponding example data set(s) and download from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
+* select a Jupyter notebook from the `jupyter` subdirectory or its [corresponding repository](https://github.com/decryptofy/scarr-jupyter).
+* determine corresponding example data set(s) and download from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
 * run Jupyter notebook to use SCARR
 
-***Important note for downloading from Box.com:*** we are currently in the process of finding optimized ways for making the download process more convenient and more reliable. Until then, please avoid downloading whole directories that also have trace files in them, as Box.com will attempt to create a .zip prior to the download (causing a time out while doing so). Select and download data sets only individually. The Jupyter notebooks will soon be included as a submodule.
+***Important note for downloading from Box.com:*** we are currently in the process of finding optimized ways for making the download process more convenient and more reliable. Until then, please avoid downloading whole directories that also have trace files in them, as Box.com will attempt to create a .zip prior to the download (causing a timeout while doing so). Select and download data sets only individually.
 
 # SCARR's File Format for Side-Channel Analysis Data
 
@@ -97,7 +121,7 @@ SCARR was initiated and designed by Vincent Immler out of a necessity to support
 Additional contributions by (new contributors, add yourself here):
 * Matt Ruff
 * Kevin Yuan
-* to be added
+* Alexander Merino
 
 # Copyright
 

@@ -1,0 +1,3 @@
+[submodule "jupyter"]
+	path = jupyter
+	url = git@github.com:decryptofy/scarr-jupyter.git

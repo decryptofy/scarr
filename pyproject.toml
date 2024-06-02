@@ -8,7 +8,7 @@ version = "0.0.2"
 authors = [
   { name="Jonah Bosland", email="boslandj@oregonstate.edu" },
   { name="Stefan Ene", email="enes@oregonstate.edu" },
-  { name="Vincent Immler", email="vincent.immler@oregonstate.edu" },
+  { name="Vincent Immler", email="vincent.immler+scarr@oregonstate.edu" },
 ]
 description = "A high-performance SCA library for datasets that include NxM EM trace grids."
 readme = "README.md"
@@ -18,8 +18,9 @@ dependencies = [
 	'numba',
 	'zarr[jupyter]',
 	'ruff',
-  'mpmath',
-  'matplotlib',
+    'mpmath',
+    'matplotlib',
+    'scipy',
 ]
 license = {text = "MPL-2.0"}
 classifiers = [
