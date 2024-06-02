@@ -16,6 +16,9 @@ If you are interested in making SCARR better, there are many ways you can contri
 * Patches should be submitted in the form of Pull Requests to the SCARR repository on GitHub.
 * For bugs and feature Requests, please open an [issue](https://github.com/decryptofy/scarr/issues).
 * Within the Python context, we do *not* consider GPL to be an appropriate license, run [liccheck](https://pypi.org/project/liccheck/) to make sure not to accidentally import GPL code.
+* For newly added Python source code files, to include the Mozilla Public License 2.0 (no copyleft exception) header.
+* For newly included Python packages, to run liccheck -s license_check.ini to make sure that only license-compatible projects are included (next step: include that as a GitHub action)
+* For new contributors that add/modify/extend source code files under the MPL 2.0 license, to include themselves in the list of contributors in the README.md (i.e., the term contribution and contributor follow the MPL 2.0 license definitions).
 
 Steps to Successful Developer Contribution
 1.	Identify an opportunity on our GitHub repository, such as a bug fix, outstanding new feature, or documentation.
