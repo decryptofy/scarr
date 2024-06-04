@@ -17,7 +17,7 @@ If you are interested in making SCARR better, there are many ways you can contri
 * For bugs and feature Requests, please open an [issue](https://github.com/decryptofy/scarr/issues).
 * Within the Python context, we do *not* consider GPL to be an appropriate license, run [liccheck](https://pypi.org/project/liccheck/) to make sure not to accidentally import GPL code.
 * For newly added Python source code files, include the Mozilla Public License 2.0 (no copyleft exception) header.
-* For newly included Python packages, run liccheck -s license_check.ini to make sure that only license-compatible projects are included (next step: include that as a GitHub action).
+* For newly included Python packages, liccheck -s license_check.ini will run to make sure that only license-compatible projects are included; this is automated and results will be seen in a GitHub Action.
 * New contributors that add/modify/extend source code files under the MPL 2.0 license should include themselves in the list of contributors in the README.md (i.e., the term contribution and contributor follow the MPL 2.0 license definitions).
 
 Steps to Successful Developer Contribution
@@ -29,9 +29,9 @@ Steps to Successful Developer Contribution
 6.	Repeat this process, stay involved, and celebrate your successful contributions to SCARR!
 
 Examples of Prior Successful Contributions:
-1. Lorem Ipsum
-2. Lorem Ipsum
-3. Lorem Ipsum
+1. Bug Fix: Random float casting fix [PR #3](https://github.com/decryptofy/scarr/pull/3)
+2. New Feature: chi2test [PR #6](https://github.com/decryptofy/scarr/pull/6)
+3. Documentation: Architecture.md [PR #7](https://github.com/decryptofy/scarr/pull/7)
 
 # Legal
 
