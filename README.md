@@ -122,6 +122,7 @@ Additional contributions by (new contributors, add yourself here):
 * Matt Ruff
 * Kevin Yuan
 * Alexander Merino
+* Tristan Long
 
 # Copyright
 
