@@ -24,9 +24,10 @@ Steps to Successful Developer Contribution
 1.	Identify an opportunity on our GitHub repository, such as a bug fix, outstanding new feature, or documentation.
 2.	Fork the SCARR repository on your GitHub account and create a feature branch that describes the nature of your contribution.
 3.	Make your changes to the feature branch, committing them frequently, then push and merge to your forked repository’s main branch.
-4.	Submit a pull request to the main branch of SCARR, being as detailed as possible in your description to ensure it is integrated in a timely manner.
-5.	Your request will undergo a review by code owners, please address any necessary feedback, after which you will receive approval and can merge your pull request.
-6.	Repeat this process, stay involved, and celebrate your successful contributions to SCARR!
+4.	Ensure that any new dependencies you've introduced are added to pyproject.toml and requirements.txt accordingly.
+5.	Submit a pull request to the main branch of SCARR, being as detailed as possible in your description to ensure it is integrated in a timely manner.
+6.	Your request will undergo a review by code owners, please address any necessary feedback, after which you will receive approval and can merge your pull request.
+7.	Repeat this process, stay involved, and celebrate your successful contributions to SCARR!
 
 Examples of Prior Successful Contributions:
 1. Bug Fix: Random float casting fix [PR #3](https://github.com/decryptofy/scarr/pull/3)
