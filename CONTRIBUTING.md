@@ -18,7 +18,7 @@ If you are interested in making SCARR better, there are many ways you can contri
 * Within the Python context, we do *not* consider GPL to be an appropriate license, run [liccheck](https://pypi.org/project/liccheck/) to make sure not to accidentally import GPL code.
 * For newly added Python source code files, include the Mozilla Public License 2.0 (no copyleft exception) header.
 * For newly included Python packages, liccheck -s license_check.ini will run to make sure that only license-compatible projects are included; this is automated and results will be seen in a GitHub Action.
-* New contributors that add/modify/extend source code files under the MPL 2.0 license should include themselves in the list of contributors in the README.md (i.e., the term contribution and contributor follow the MPL 2.0 license definitions).
+* New contributors that add/modify/extend source code files under the MPL 2.0 license should include themselves in the list of contributors in the README.md (i.e., the term contribution and contributor follow the MPL 2.0 license definitions). Please note: we consider Markdown files as code under the MPL 2.0 license, too.
 
 Steps to Successful Developer Contribution
 1.	Identify an opportunity on our GitHub repository, such as a bug fix, outstanding new feature, or documentation.
