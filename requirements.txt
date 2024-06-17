@@ -5,3 +5,4 @@ ruff
 mpmath
 matplotlib
 scipy
+liccheck
