@@ -123,6 +123,7 @@ Additional contributions by (new contributors, add yourself here):
 * Kevin Yuan
 * Alexander Merino
 * Tristan Long
+* Kayla Barton
 
 # Copyright
 
