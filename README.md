@@ -54,7 +54,9 @@ Afterwards, you can install SCARR by typing:
 python3 -m pip install .
 ```
 
-Please note: the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10. To make use of [Jupyter notebooks](https://jupyter.org/), you may want to use [VS Code](https://code.visualstudio.com/) and its [Jupyter plugin](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter), or [PyCharm](https://www.jetbrains.com/pycharm/), but any other options to run Jupyter notebooks should work, too.
+Please note: for now, the reference OS for SCARR is Ubuntu 22.04 LTS with its default Python 3.10. See [here](https://scientific-python.org/specs/spec-0000/) why we will not support older Python versions.
+
+To make use of [Jupyter notebooks](https://jupyter.org/), you may want to use [VS Code](https://code.visualstudio.com/) and its [Jupyter plugin](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter), or [PyCharm](https://www.jetbrains.com/pycharm/), but any other option to run Jupyter notebooks should work, too.
 
 # Usage Warning
 
