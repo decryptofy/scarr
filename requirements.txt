@@ -1,6 +1,7 @@
 numpy<2
 numba
 zarr[jupyter]
+torch
 ruff
 mpmath
 matplotlib
