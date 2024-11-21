@@ -126,6 +126,7 @@ Additional contributions by (new contributors, add yourself here):
 * Alexander Merino
 * Tristan Long
 * Kayla Barton
+* Christopher McLean
 
 # Copyright
 

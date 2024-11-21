@@ -29,7 +29,7 @@ class Container:
     - byte_positions: The byte positions to be processed by the algorithm has a default value of [0]
     - tile_positions: The tile positions that are to have the byte positions processed default value of [(0,0)]
     """
-    def __init__(self, options: ContainerOptions, Async = True, model_positions = [0], tile_positions = [(0,0)], filters = [], points=[], trace_index=[], slice=[], stride=1) -> None:
+    def __init__(self, options: ContainerOptions, Async = True, model_positions = [0], tile_positions = [(0,0)], filters = [], points=[], trace_index=[], slab=[], stride=1) -> None:
         self.engine = options.engine
         self.data = options.handler
         self.data2 = options.handler2  # second trace (only t-test)
@@ -48,28 +48,28 @@ class Container:
         self.min_traces_length = 0
 
         if len(points) > 0:
-            self.slice_index = points
-            self.time_slice = []
+            self.slab_points = points
+            self.slab_range = []
             self.stride = 1
             self.sample_length = len(points)
-        elif len(slice) == 2 and stride > 1:
-            self.slice_index = []
-            self.time_slice = slice
+        elif len(slab) == 2 and stride > 1:
+            self.slab_points = []
+            self.slab_range = slab
             self.stride = stride
-            self.sample_length = math.ceil((self.time_slice[1] - self.time_slice[0]) / stride)
-        elif len(slice) == 2:
-            self.slice_index = []
-            self.time_slice = slice
+            self.sample_length = math.ceil((self.slab_range[1] - self.slab_range[0]) / stride)
+        elif len(slab) == 2:
+            self.slab_points = []
+            self.slab_range = slab
             self.stride = 1
-            self.sample_length = int(self.time_slice[1] - self.time_slice[0])
+            self.sample_length = int(self.slab_range[1] - self.slab_range[0])
         elif stride > 1:
-            self.slice_index = []
-            self.time_slice = []
+            self.slab_points = []
+            self.slab_range = []
             self.stride = stride
             self.sample_length = math.ceil(self.data.sample_length / self.stride)
         else:
-            self.slice_index = []
-            self.time_slice = []
+            self.slab_points = []
+            self.slab_range = []
             self.stride = 1
             self.sample_length = self.data.sample_length
         
@@ -86,13 +86,13 @@ class Container:
         for filter in self.filters:
             filter.configure(tile_x, tile_y)
         # int() casting needed for random typing linux bug
-        return int(self.data.configure(tile_x, tile_y, model_positions, self.slice_index, self.trace_index, self.time_slice, self.stride, convergence_step))
+        return int(self.data.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step))
 
     def configure2(self, tile_x, tile_y, model_positions, convergence_step = None):
         for filter in self.filters:
             filter.configure(tile_x, tile_y)
         # int() casting needed for random typing linux bug
-        return int(self.data2.configure(tile_x, tile_y, model_positions, self.slice_index, self.trace_index, self.time_slice, self.stride, convergence_step))
+        return int(self.data2.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step))
 
     def get_batches(self, tile_x, tile_y):
         for batch in self.data.get_batch_generator():

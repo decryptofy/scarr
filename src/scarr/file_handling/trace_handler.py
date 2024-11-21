@@ -26,7 +26,7 @@ class TraceHandler:
         self.model_positions = None
         # How many rows are in the current observed directory of the file
         self.data_length = None
-        self.slices = None
+        self.slabs = None
         # Default directory of the zarr file
         self.current_tile = '0/0'  # Default tile
         # Zarr group
@@ -36,28 +36,28 @@ class TraceHandler:
         self.traces_length = len(self.data['0/0/traces'])
 
     # Change the directory to the passed in tile
-    def configure(self, tile_x, tile_y, model_positions, slice_index=[], trace_index=[], time_slice=[], stride=1, convergence_step = None):
+    def configure(self, tile_x, tile_y, model_positions, slab_points=[], trace_index=[], slab_range=[], stride=1, convergence_step = None):
         try:
             self.model_positions = model_positions
             self.current_tile = f'{tile_x}/{tile_y}'
             self.data_length = len(self.data[f'{self.current_tile}{"/traces"}'])
 
-            if len(slice_index) > 0:
-                self.sample_slice = slice_index
-            elif len(time_slice) == 2 and stride > 1:
-                self.sample_slice = slice(time_slice[0], time_slice[1], stride)
-            elif len(time_slice) == 2:
-                self.sample_slice = slice(time_slice[0], time_slice[1])
+            if len(slab_points) > 0:
+                self.sample_slab = slab_points
+            elif len(slab_range) == 2 and stride > 1:
+                self.sample_slab = slice(slab_range[0], slab_range[1], stride)
+            elif len(slab_range) == 2:
+                self.sample_slab = slice(slab_range[0], slab_range[1])
             elif stride > 1:
-                self.sample_slice= slice(0, self.sample_length, stride)
+                self.sample_slab= slice(0, self.sample_length, stride)
             else:
-                self.sample_slice = slice(None)
+                self.sample_slab = slice(None)
             
             if len(trace_index) > 0:
                 self.data_length = len(trace_index)
-                self.slices = self.create_batches_index(trace_index)
+                self.slabs = self.create_batches_index(trace_index)
             else:
-                self.slices = self.create_batches()
+                self.slabs = self.create_batches()
 
             if convergence_step is None:
                 return 1
@@ -68,7 +68,7 @@ class TraceHandler:
             print("Error configuring tile")
 
     # Grab a batch and pass it back to the algorithm's run function
-    def grab(self, slice):
+    def grab(self, slab):
 
         # Declare and select data for the batch
         full_data = [None for i in range(4)]
@@ -82,60 +82,60 @@ class TraceHandler:
                     index = 2
                 case _:
                     continue
-            full_data[index] = self.select_single_column(column, slice)
-        full_data[3] = self.select_traces(slice)
+            full_data[index] = self.select_single_column(column, slab)
+        full_data[3] = self.select_traces(slab)
         # Pass batch to the algorithm's run function
         return full_data
 
     # Fetch data of a non-samples zarr array
-    def select_single_column(self, col_name, slice):
+    def select_single_column(self, col_name, slab):
         # Grab zarr array
         col_data = self.data[f'{self.current_tile}/{col_name}']
         # Grab the actual data
-        data = col_data.get_orthogonal_selection((slice, self.model_positions))
+        data = col_data.get_orthogonal_selection((slab, self.model_positions))
         # Pass to grab
         return data
     
     # Specific function for grabbing sample data
-    def select_traces(self, slice):
+    def select_traces(self, slab):
         # Grab zarr array of samples
         traces = self.data[f'{self.current_tile}/traces']
         # Grab the actual data
-        data = traces.get_orthogonal_selection((slice, self.sample_slice))
+        data = traces.get_orthogonal_selection((slab, self.sample_slab))
         # Pass to grab
         return data
 
     def get_batch_generator(self):
-        for batch_slice in self.slices:
-            yield self.grab(batch_slice)
+        for batch_slab in self.slabs:
+            yield self.grab(batch_slab)
 
     def get_batch_index(self, index):
-        if index >= len(self.slices):
+        if index >= len(self.slabs):
             return []
         
-        return self.grab(self.slices[index])
+        return self.grab(self.slabs[index])
 
     def create_batches(self):
-        slices = []
+        slabs = []
         batch_start_index = self.start
 
         while batch_start_index < self.data_length:
             entry_count = min(self.batch_size, self.data_length - batch_start_index)
-            slices.append(slice(batch_start_index, batch_start_index+entry_count))
+            slabs.append(slice(batch_start_index, batch_start_index+entry_count))
             batch_start_index += entry_count
         
-        return slices
+        return slabs
     
     def create_batches_index(self, index):
-        slices = []
+        slabs = []
         batch_start_index = 0
 
         while batch_start_index < len(index):
             entry_count = min(self.batch_size, len(index) - batch_start_index)
-            slices.append(index[batch_start_index:batch_start_index+entry_count])
+            slabs.append(index[batch_start_index:batch_start_index+entry_count])
             batch_start_index += entry_count
 
-        return slices
+        return slabs
 
     def fetch(self, column, tile_x=0, tile_y=0, row_index = 0, col_index=None):
         if col_index is None:
