@@ -35,11 +35,11 @@ class CorrelationData:
 
     def configure(self, tile_x, tile_y, model_positions, convergence_step=None):
         self.model_positions = model_positions
-        self.slices = []
+        self.slabs = []
         batch_start_index = 0
         while batch_start_index < self.num_traces:
             entry_count = min(self.batch_size, self.num_traces - batch_start_index)
-            self.slices.append(slice(batch_start_index, batch_start_index+entry_count))
+            self.slabs.append(slice(batch_start_index, batch_start_index+entry_count))
             batch_start_index += entry_count
         
         return 1
@@ -53,25 +53,25 @@ class CorrelationData:
     def get_key(self):
         return self.key
     
-    def get_byte_batch(self, slice, model_pos):
+    def get_byte_batch(self, slab, model_pos):
 
-        return [self.plaintext[slice, [model_pos]], self.key[[model_pos]], self.traces[slice,:]]
+        return [self.plaintext[slab, [model_pos]], self.key[[model_pos]], self.traces[slab,:]]
     
     def get_batches_by_byte(self, tile_x, tile_y, model_pos):
-        for slice in self.slices:
-            yield self.get_byte_batch(slice, model_pos)
+        for slab in self.slabs:
+            yield self.get_byte_batch(slab, model_pos)
     
-    def get_batch(self, slice):
+    def get_batch(self, slab):
 
-        return [self.plaintext[slice,self.model_positions], self.key[self.model_positions], self.traces[slice,:]]
+        return [self.plaintext[slab,self.model_positions], self.key[self.model_positions], self.traces[slab,:]]
     
     def get_batches_all(self, tile_x, tile_y):
-        for slice in self.slices:
-            yield self.get_batch(slice)
+        for slab in self.slabs:
+            yield self.get_batch(slab)
 
     def get_batch_index(self, index):
 
-        if index >= len(self.slices):
+        if index >= len(self.slabs):
             return []
         
-        return [self.plaintext[self.slices[index], self.model_positions], self.key[self.model_positions], self.traces[self.slices[index], :]]
+        return [self.plaintext[self.slabs[index], self.model_positions], self.key[self.model_positions], self.traces[self.slabs[index], :]]
