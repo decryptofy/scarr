@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scarr"
-version = "0.0.2"
+version = "0.1.0"
 authors = [
   { name="Jonah Bosland", email="boslandj@oregonstate.edu" },
   { name="Stefan Ene", email="enes@oregonstate.edu" },
