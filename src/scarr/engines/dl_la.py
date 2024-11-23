@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import mpmath
 from math import floor
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -33,6 +34,7 @@ class DL_LA(Engine):
         self.counted_batches = 0
         self.data_dtype = None
         self.sensitivity = None
+        self.p_value = 0
         # validation values
         self.accuracy = 0
         self.actual_labels = None
@@ -245,12 +247,28 @@ class DL_LA(Engine):
             print("Invalid model type entered")
             return
         self.model.load_state_dict(torch.load(path))
-        print("Loaded", self.model_type, "model from memory")
+        print("Loaded", self.model_type, "model from memory")    
 
 
+    def get_leakage(self, p_th=1e-5):
+        x = 0 # itermediate statistic value
+        # get number of successful traces
+        M = self.traces_len - self.counted_batches*self.batch_size
+        sM = int(floor(self.accuracy * M))
+        # compute probability using binomial distribution 
+        for k in range(sM, M+1): x = mpmath.fadd(x, mpmath.binomial(M, k))
+        self.p_value = mpmath.fmul(x, mpmath.power(0.5,M))
+
+        # print if leakage is present
+        if self.p_value <= p_th:
+            print("Leakage detected with p-value:", self.p_value)
+        else:
+            print("No significant leakage detected with p-value:", self.p_value)
+    
+
+    # Debugging info
     def print_info(self):
         print("> trace dimentions:", self.traces_len, self.samples_len)
-
 
     def get_accuracy(self):
         return self.accuracy
@@ -258,3 +276,5 @@ class DL_LA(Engine):
     def get_sensitivity(self):
         return self.sensitivity.numpy()
     
+    def get_p_value(self):
+        return self.p_value
