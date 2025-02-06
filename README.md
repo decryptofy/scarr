@@ -43,7 +43,7 @@ pip3 install "git+https://github.com/decryptofy/scarr.git"
 *Alternatively*, you can clone the repository to also get the most recent versions of the [SCARR Jupyter notebooks](https://github.com/decryptofy/scarr-jupyter):
 
 ```
-git clone git@github.com:decryptofy/scarr.git
+git clone https://github.com/decryptofy/scarr.git
 cd scarr
 git submodule update --init jupyter
 ```
