@@ -32,8 +32,8 @@ class TraceHandler:
         # Zarr group
         self.data = zarr.open(fileName, mode='r')
         print("opened zarr file ", fileName)
-        self.sample_length = len(self.data['0/0/traces'][0])
-        self.traces_length = len(self.data['0/0/traces'])
+        self.sample_length = self.data['0/0/traces'].shape[1]
+        self.traces_length = self.data['0/0/traces'].shape[0]
 
     # Change the directory to the passed in tile
     def configure(self, tile_x, tile_y, model_positions, slab_points=[], trace_index=[], slab_range=[], stride=1, convergence_step = None):

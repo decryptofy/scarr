@@ -1,6 +1,6 @@
 numpy<2
 numba
-zarr[jupyter]
+zarr[jupyter]<3
 torch
 ruff
 mpmath
