@@ -7,13 +7,10 @@
 
 from .engine import Engine
 from multiprocessing.pool import Pool
-
 import numpy as np
-# import numba as nb
 import os
 
 import matplotlib.pyplot as plt
-# from tqdm import tqdm
 
 # Class to compute average traces
 class AverageTraces:
@@ -45,15 +42,13 @@ def s_box_out(data, key_byte, sbox):
 # Linear regression analysis (LRA) for each byte of the key
 def lra(data, traces, intermediate_fkt, sbox, sst):
     num_traces, trace_length = traces.shape
-    #traces_mean = np.mean(traces, axis=0)
-    #sst = np.sum((traces - traces_mean) ** 2, axis=0)
     SSR = np.empty((256, trace_length))
     all_coefs = np.empty((256, 9, trace_length))
 
     for key_byte in np.arange(256, dtype='uint8'):
         intermediate_var = intermediate_fkt(data, key_byte, sbox)
         M = np.array(list(map(wrapper(8), intermediate_var)))
-        # P = np.linalg.pinv(M)
+
         P = (np.linalg.inv(M.T @ M)) @ M.T
 
         beta = P @ traces
@@ -105,7 +100,6 @@ def fixed_sst(traces):
 class LRA(Engine):
     def __init__(self, key_bytes=np.arange) -> None:
         self.key_bytes = key_bytes
-        # initialize values needed
         self.samples_len = 0
         self.traces_len = 0
         self.batch_size = 0
@@ -156,11 +150,6 @@ class LRA(Engine):
         return winning_byte
 
 
-    def finalize(self):
-        # Show graph?
-        pass
-
-
     def run(self, container, samples_range=None):
         if samples_range == None:
             self.samples_range = container.data.sample_length
@@ -170,9 +159,7 @@ class LRA(Engine):
             self.samples_range = samples_range[1]-samples_range[0]
             (self.samples_start, self.samples_end) = samples_range
 
-        # final_results = np.zeros((len(container.tiles), len(container.model_positions), container.sample_lenght))
         self.average_traces = [AverageTraces(256, self.samples_range) for _ in range(len(container.model_positions))]   # all key bytes
-        # self.populate(container)
         self.aes_key = [[] for _ in range(len(container.tiles))]
 
         with Pool(processes=int(os.cpu_count()/2)) as pool:
@@ -180,7 +167,6 @@ class LRA(Engine):
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
                 for model_pos in container.model_positions:
-                    # self.run_workload(container, tile_x, tile_y, model_pos)
                     workload.append((self, container, self.average_traces[model_pos], tile_x, tile_y, model_pos))
             starmap_results = pool.starmap(self.run_workload, workload, chunksize=1)
             pool.close()
@@ -190,7 +176,7 @@ class LRA(Engine):
                 tile_index = list(container.tiles).index((tile_x, tile_y))
                 self.aes_key[tile_index].append(tmp_key_byte)
         
-        # print recovered AES key(s)
+        # Print recovered AES key(s)
         for key in self.aes_key:
             aes_key_bytes = bytes(key)
             print("Recovered AES Key:", aes_key_bytes.hex())

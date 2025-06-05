@@ -8,12 +8,7 @@
 from .engine import Engine
 import numpy as np
 from multiprocessing.pool import Pool
-# import numba as nb
 import os
-
-
-# from tqdm import tqdm
-# from typing import List
 
 
 def model_single_bits(x, bit_width):
@@ -35,8 +30,6 @@ def model_cov(byte_idx, model, mod_mean, group_n):
 
 
 def covar_with_model(byte_idx, model, mod_mean, grouped_mean, ungrouped_mean, n_traces, group_n):
-    # Indexing in two steps is necesssary to get the correct order.
-    # https://stackoverflow.com/q/35016092/4071916
     signal_diff = (grouped_mean[:,:] -
                    ungrouped_mean[None,:])
     model_diff = model - mod_mean[None,:]
@@ -62,12 +55,10 @@ def lra(byte_idx, model_input_sbox, ungrouped_var, group_n, grouped_mean, ungrou
         model_input_ptxt = model_input_sbox[np.arange(256) ^ key_byte]
         mod_mean = model_mean(byte_idx, model_input_ptxt, group_n)
         mod_cov = model_cov(byte_idx, model_input_ptxt, mod_mean, group_n)
-        mod_invcov = np.linalg.inv(mod_cov) # (M^T M)^-1 from (1)
+        mod_invcov = np.linalg.inv(mod_cov)
 
-        # M^T L from (1)
         cov = covar_with_model(byte_idx, model_input_ptxt, mod_mean, grouped_mean, ungrouped_mean, n_traces, group_n)
 
-        # B from (1)
         model_params[key_byte,:,:] = np.matmul(mod_invcov, cov);
 
         # Total coefficient of determination, over all sample points.
@@ -83,14 +74,10 @@ def lra(byte_idx, model_input_sbox, ungrouped_var, group_n, grouped_mean, ungrou
 
 class LRA(Engine):
     def __init__(self):
-        # initialize values needed
-
         self.key_bytes = np.arange(16)
         self.aes_key = []
-
         self.samples_range = None
         self.samples_start = self.samples_end = 0
-
 
         # S-box definition
         self.sbox = np.array([
@@ -113,7 +100,6 @@ class LRA(Engine):
         ])
 
         self.model_input = np.zeros((256, 16), dtype=np.float64)
-        # build a bit model table
         for i in range(256):
             self.model_input[i, :8] = [(i >> j) & 1 for j in range(8)]
             self.model_input[i, 8:] = [(self.sbox[i] >> j) & 1 for j in range(8)]
@@ -121,14 +107,6 @@ class LRA(Engine):
         self.group_n = None
         self.group_mean = None
         self.group_M = None
-
-    # def populate(self, container):
-    #     # initialize dimensional variables
-    #     self.samples_len = container.sample_length
-    #     self.traces_len = container.data.traces_length
-    #     self.batch_size = container.data.batch_size
-    #     # self.batches_num = (self.traces_len + self.batch_size - 1) // self.batch_size
-
 
     # Load traces and plaintext data
     def load_data(self, container, i, model_pos):
@@ -173,11 +151,6 @@ class LRA(Engine):
         return k
 
 
-    def finalize(self):
-        # Show graph?
-        pass  
-
-
     def run(self, container, samples_range=None):
         if samples_range == None:
             self.samples_range = container.data.sample_length
@@ -194,7 +167,6 @@ class LRA(Engine):
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
                 for model_pos in container.model_positions:
-                    # self.run_workload(container, tile_x, tile_y, model_pos)
                     workload.append((self, container, tile_x, tile_y, model_pos))
             starmap_results = pool.starmap(self.run_workload, workload, chunksize=1)
             pool.close()
@@ -204,7 +176,7 @@ class LRA(Engine):
                 tile_index = list(container.tiles).index((tile_x, tile_y))
                 self.aes_key[tile_index].append(tmp_key_byte)
 
-        # print recovered AES key(s)
+        # Print recovered AES key(s)
         for key in self.aes_key:
             aes_key_bytes = bytes(key)
             print("Recovered AES Key:", aes_key_bytes.hex())
@@ -216,7 +188,6 @@ class LRA(Engine):
         group_n = np.zeros((256), dtype=np.uint32)
         group_mean = np.zeros((256, self.samples_range), dtype=np.float64)
         group_M = np.zeros_like(group_mean)
-        # print(">>", group_n.shape, group_mean.shape, group_M.shape)
 
         for batch in container.get_batches(tile_x, tile_y):
             (group_n, group_mean, group_M) = self.update(batch[-1][:,self.samples_start:self.samples_end], batch[0], group_n, group_mean, group_M)

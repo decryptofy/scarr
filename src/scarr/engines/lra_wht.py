@@ -8,9 +8,6 @@
 from .engine import Engine
 import numpy as np
 from multiprocessing.pool import Pool
-# import numba as nb
-
-# from tqdm import tqdm
 import os
 
 from scipy.linalg import hadamard
@@ -57,9 +54,6 @@ def iWHT(x):
 # Linear regression analysis (LRA) for each byte of the key
 def lra(data, traces, sbox, sst):
     num_traces, trace_length = traces.shape
-    # mean_traces = np.mean(traces, axis=0)
-    # sst = np.sum((traces - mean_traces) ** 2, axis=0)
-    # SSR = np.zeros((256, trace_length), dtype=np.longdouble)
     R2 = np.empty((256, trace_length))
 
     intermediate_var = s_box_out(data, 0, sbox)
@@ -68,8 +62,6 @@ def lra(data, traces, sbox, sst):
     Tm = np.linalg.cholesky(M0.T @ M0)
     U0 = solve_triangular(Tm.T, M0.T, lower=True) 
 
-   # print("M0, U0:", M0.shape, U0.shape)
-
     U0_wht = np.zeros_like(U0)
     U0_iwht = np.zeros_like(U0_wht)
     for p in range(U0.shape[0]):
@@ -77,10 +69,10 @@ def lra(data, traces, sbox, sst):
 
     for i in range(trace_length):
         WL = WHT(traces[:, i])
-        for p in range(U0_wht.shape[0]-1):              # is this s or s-1 ? see paper page 160
+        for p in range(U0_wht.shape[0]-1):             
             U0_iwht[p,:] = iWHT(U0_wht[p,:] * WL[:])
         for key_byte in range(256):
-            SSR = np.sum((U0_iwht[:-1,key_byte])**2)    # is this s or s-1 ? see paper page 160
+            SSR = np.sum((U0_iwht[:-1,key_byte])**2)  
             R2[key_byte,i] = SSR / sst[i]
     
     return R2
@@ -103,14 +95,11 @@ def wrapper(y):
 
 class LRA(Engine):
     def __init__(self, key_bytes=np.arange):
-        # initialize values needed
         self.key_bytes = key_bytes
         self.samples_len = self.traces_len = 0
         self.batch_size = self.batches_num = 0
-
         self.average_traces = []
         self.aes_key = []
-
         self.samples_range = None
 
         # S-box definition
@@ -135,8 +124,6 @@ class LRA(Engine):
 
 
     def update(self, traces: np.ndarray, plaintext: np.ndarray, average_traces, n_tr, v, u):
-        # for byte_idx in container.model_positions:
-            # traces, plaintext = self.load_data(container, idx, byte_idx)
         plaintext = plaintext.reshape(-1)       
 
         for i in range(traces.shape[0]):
@@ -152,7 +139,6 @@ class LRA(Engine):
 
     def calculate(self, byte_idx, average_traces, n_tr, v, u):
         plain, trace = average_traces.get_data()
-        # Note: results were worse when using the "fixed sst"
         sst = v - (u ** 2) / n_tr
         r2 = lra(plain, trace, self.sbox, sst)
         r2_peaks = np.max(r2, axis=1)
@@ -183,7 +169,6 @@ class LRA(Engine):
             for tile in container.tiles:
                 (tile_x, tile_y) = tile
                 for model_pos in container.model_positions:
-                    # self.run_workload(container, tile_x, tile_y, model_pos)
                     workload.append((self, container, self.average_traces[model_pos], tile_x, tile_y, model_pos))
             starmap_results = pool.starmap(self.run_workload, workload, chunksize=1)
             pool.close()
@@ -193,7 +178,7 @@ class LRA(Engine):
                 tile_index = list(container.tiles).index((tile_x, tile_y))
                 self.aes_key[tile_index].append(tmp_key_byte)
 
-        # print recovered AES key(s)
+        # Print recovered AES key(s)
         for key in self.aes_key:
             aes_key_bytes = bytes(key)
             print("Recovered AES Key:", aes_key_bytes.hex())
