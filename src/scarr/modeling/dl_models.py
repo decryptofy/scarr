@@ -5,7 +5,6 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-import torch
 import torch.nn as nn
 
 
@@ -33,6 +32,29 @@ class DL_Models:
             x = self.flatten(x)
             logits = self.linear_relu_stack(x)
             return logits
+        
+
+    # Multi-Layered Perceptron (no softmax, for ensemble)
+    class eMLP(nn.Module):
+        def __init__(self, samples_len):
+            super().__init__()
+            self.flatten = nn.Flatten()
+            self.linear_relu_stack = nn.Sequential(
+                nn.Linear(samples_len, 120),
+                nn.ReLU(),
+                nn.BatchNorm1d(120),
+                nn.Linear(120, 90),
+                nn.ReLU(),
+                nn.BatchNorm1d(90),
+                nn.Linear(90, 50),
+                nn.ReLU(),
+                nn.BatchNorm1d(50),
+                nn.Linear(50, 2),  # no softmax here
+            )
+
+        def forward(self, x):
+            x = self.flatten(x)
+            return self.linear_relu_stack(x)
 
 
     # Convolutional Neural Network
