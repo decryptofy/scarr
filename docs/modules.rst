@@ -1,7 +1,7 @@
 SCARR Modules
 =============
 
-.. automodule:: scarr
+.. automodule:: scarr.filters.normalize
    :members:
    :undoc-members:
    :show-inheritance:
