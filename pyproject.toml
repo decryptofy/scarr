@@ -35,6 +35,9 @@ classifiers = [
 "Homepage" = "https://github.com/decryptofy/scarr"
 "Bug Tracker" = "https://github.com/decryptofy/scarr/issues"
 
+[project.optional-dependencies]
+dev = ["sphinx"]
+
 [tool.autopep8]
 ignore = "E501,W6"  # or ["E501", "W6"]
 in-place = true

@@ -3,6 +3,11 @@ node_modules
 # Sphinx documentation
 docs/_build/
 
+# Pycache Untracked Files
+__pycache__/
+*.pyc
+
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
