@@ -127,6 +127,8 @@ Additional contributions by (new contributors, add yourself here):
 * Tristan Long
 * Kayla Barton
 * Christopher McLean
+* Alana Kihn
+* Jackson Hart
 
 # Copyright
 
