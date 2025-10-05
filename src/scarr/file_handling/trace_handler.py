@@ -40,7 +40,7 @@ class TraceHandler:
         try:
             self.model_positions = model_positions
             self.current_tile = f'{tile_x}/{tile_y}'
-            self.data_length = len(self.data[f'{self.current_tile}{"/traces"}'])
+            self.data_length = self.data[f'{self.current_tile}{"/traces"}'].shape[0]
 
             if len(slab_points) > 0:
                 self.sample_slab = slab_points
@@ -51,6 +51,7 @@ class TraceHandler:
             elif stride > 1:
                 self.sample_slab= slice(0, self.sample_length, stride)
             else:
+                #self.sample_slab = slice(0, self.sample_length)
                 self.sample_slab = slice(None)
             
             if len(trace_index) > 0:

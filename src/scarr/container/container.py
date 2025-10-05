@@ -86,13 +86,13 @@ class Container:
         for filter in self.filters:
             filter.configure(tile_x, tile_y)
         # int() casting needed for random typing linux bug
-        return int(self.data.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step))
+        return self.data.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step)
 
     def configure2(self, tile_x, tile_y, model_positions, convergence_step = None):
         for filter in self.filters:
             filter.configure(tile_x, tile_y)
         # int() casting needed for random typing linux bug
-        return int(self.data2.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step))
+        return self.data2.configure(tile_x, tile_y, model_positions, self.slab_points, self.trace_index, self.slab_range, self.stride, convergence_step)
 
     def get_batches(self, tile_x, tile_y):
         for batch in self.data.get_batch_generator():
