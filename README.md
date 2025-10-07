@@ -129,6 +129,7 @@ Additional contributions by (new contributors, add yourself here):
 * Christopher McLean
 * Alana Kihn
 * Jackson Hart
+* Alexander Zerkel
 
 # Copyright
 
