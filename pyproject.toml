@@ -9,7 +9,6 @@ authors = [
   { name="Jonah Bosland", email="boslandj@oregonstate.edu" },
   { name="Stefan Ene", email="enes@oregonstate.edu" },
   { name="Vincent Immler", email="vincent.immler+scarr@oregonstate.edu" },
-  { name="Alex Zerkel", email="zerkela@oregonstate.edu" }
 ]
 description = "A high-performance SCA library for datasets that include NxM EM trace grids."
 readme = "README.md"
@@ -17,9 +16,12 @@ requires-python = ">=3.12"
 dependencies = [
 	'numpy>=2, <3',
 	'numba',
-	'zarr>3.0.4, <4',
-  'torch',
-  'rich',
+	'zarr>=3.0.4, <4',
+	'notebook',
+	'ipytree>=0.2.2',
+	'ipywidgets>=8.0.0',
+  	'torch',
+  	'rich',
 	'ruff',
     'mpmath',
     'matplotlib',
