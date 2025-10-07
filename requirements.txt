@@ -1,9 +1,10 @@
-numpy<2
+numpy>=2, <3 
 numba
-zarr[jupyter]<3
+zarr>=3.0.4, <4
 torch
 ruff
 mpmath
 matplotlib
 scipy
 liccheck
+rich

@@ -4,20 +4,22 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scarr"
-version = "0.1.1"
+version = "0.2.1"
 authors = [
   { name="Jonah Bosland", email="boslandj@oregonstate.edu" },
   { name="Stefan Ene", email="enes@oregonstate.edu" },
   { name="Vincent Immler", email="vincent.immler+scarr@oregonstate.edu" },
+  { name="Alex Zerkel", email="zerkela@oregonstate.edu" }
 ]
 description = "A high-performance SCA library for datasets that include NxM EM trace grids."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
-	'numpy<2',
+	'numpy>=2, <3',
 	'numba',
-	'zarr[jupyter]<3',
+	'zarr>3.0.4, <4',
   'torch',
+  'rich',
 	'ruff',
     'mpmath',
     'matplotlib',
