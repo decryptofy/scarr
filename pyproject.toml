@@ -25,7 +25,7 @@ dependencies = [
     'mpmath',
     'matplotlib',
     'scipy',
-    #'liccheck',
+    'liccheck',
 ]
 license = {text = "MPL-2.0"}
 classifiers = [
