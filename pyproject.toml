@@ -21,12 +21,11 @@ dependencies = [
 	'ipytree>=0.2.2',
 	'ipywidgets>=8.0.0',
   	'torch',
-  	'rich',
 	'ruff',
     'mpmath',
     'matplotlib',
     'scipy',
-    'liccheck',
+    #'liccheck',
 ]
 license = {text = "MPL-2.0"}
 classifiers = [
