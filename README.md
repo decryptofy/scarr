@@ -130,6 +130,7 @@ Additional contributions by (new contributors, add yourself here):
 * Alana Kihn
 * Jackson Hart
 * Alexander Zerkel
+* Casey Colley
 
 # Copyright
 
