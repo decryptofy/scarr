@@ -13,5 +13,8 @@ class ModelValue:
     def __init__(self) -> None:
         pass
 
+    def __len__(self):
+        return 1
+
     def calculate(self, batch):
         pass
