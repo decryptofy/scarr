@@ -26,7 +26,7 @@ class MultiModel(GuessModelValue):
         all_models_output = self.models[0].calculate(batch)[np.newaxis, ...]
         for m in self.models[1:]:
             new_output = m.calculate(batch)[np.newaxis, ...]
-            all_models_output = np.concatenate((all_models_output), axis=0)
+            all_models_output = np.concatenate((all_models_output, new_output), axis=-1)
 
         return all_models_output
 

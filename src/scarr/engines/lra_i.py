@@ -71,7 +71,6 @@ class LRA(Engine):
             ungrouped_sumsqdiff = between + within
             return ungrouped_mean, ungrouped_sumsqdiff
 
-        num_traces, trace_length = np.sum(grouped_n), grouped_sumsqdiff.shape[1]
         ungrouped_mean, ungrouped_sumsqdiff = _ungrouped_stats(grouped_mean, grouped_sumsqdiff, grouped_n)
         
         mod_mean = np.average(model, axis=1, weights=grouped_n)
