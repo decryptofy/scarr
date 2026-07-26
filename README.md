@@ -69,6 +69,10 @@ After installing SCARR and consideration of the usage warning, please proceed as
 * select a Jupyter notebook from the `jupyter` subdirectory or its [corresponding repository](https://github.com/decryptofy/scarr-jupyter).
 * determine corresponding example data set(s) and download from Box.com: [click here](https://oregonstate.box.com/s/flpkr969do6v1h5a8qwfw5t49c7ivzgl)
 * run Jupyter notebook to use SCARR
+* 
+## Beginner Notes for Running Notebooks
+
+SCARR examples use Jupyter notebooks, so beginners should be comfortable with basic Python and opening notebook files. Before running a notebook, users should first install SCARR and download the matching example dataset listed in the Getting Started steps. The notebooks can be opened with any Jupyter-compatible tool, such as Jupyter in a browser, VS Code with the Jupyter extension, or PyCharm. New users should start with the first notebook in the `jupyter` folder and make sure the data files are in the expected location before running the cells.
 
 ***Important note for downloading from Box.com:*** we are currently in the process of finding optimized ways for making the download process more convenient and more reliable. Until then, please avoid downloading whole directories that also have trace files in them, as Box.com will attempt to create a .zip prior to the download (causing a timeout while doing so). Select and download data sets only individually.
 
