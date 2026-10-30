@@ -127,7 +127,7 @@ class MIA(Engine):
 
     def compute_result(self, tile_x, tile_y, container):
 
-        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
+        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint64)
 
         traces_processed = 0
         converge_index = 0
@@ -152,7 +152,7 @@ class MIA(Engine):
         self.candidates[converge_index] = self.find_candidate(result)
 
     async def async_compute_result(self, container):
-        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint16)
+        self.histogram = np.zeros((self.model_value.num_vals, container.sample_length, self.bin_num, 256), dtype=np.uint64)
         index = 0
         batch = container.get_batch_index(index)
         index += 1
