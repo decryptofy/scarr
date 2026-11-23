@@ -65,8 +65,8 @@ class TraceHandler:
             else:
                 return -(self.data_length // -convergence_step)
 
-        except:
-            print("Error configuring tile")
+        except Exception as exc:
+            raise RuntimeError("Error configuring tile") from exc
 
     # Grab a batch and pass it back to the algorithm's run function
     def grab(self, slab):
