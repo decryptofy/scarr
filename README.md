@@ -131,6 +131,7 @@ Additional contributions by (new contributors, add yourself here):
 * Jackson Hart
 * Alexander Zerkel
 * Casey Colley
+* Ricardo Porras
 
 # Copyright
 
